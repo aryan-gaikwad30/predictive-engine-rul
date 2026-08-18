@@ -1,0 +1,25 @@
+[project]
+name = "predictive-engine-rul"
+version = "0.1.0"
+description = "Predictive Engine — Health & Remaining Useful Life (RUL) Platform"
+authors = [
+    {name = "Implementation Engineer"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "seaborn",
+    "jupyter",
+    "pytest"
+]
+
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
