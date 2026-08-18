@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment / secrets
+.env
+.env.*
+
+# Raw and generated datasets
+# Keep the directory structure in Git, but never commit the actual C-MAPSS data.
+data/raw/*
+!data/raw/CMAPSSData/
+data/raw/CMAPSSData/*
+!data/raw/CMAPSSData/.gitkeep
+
+data/processed/
+
+# ML artifacts
+models/
+artifacts/
+*.pkl
+*.joblib
+*.pt
+*.pth
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
