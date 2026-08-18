@@ -9,3 +9,6 @@ CMAPSS_DATA_DIR = DATA_ROOT / "raw" / "CMAPSSData"
 
 # Reports directories
 REPORTS_DIR = PROJECT_ROOT / "reports"
+
+# Target constants
+DEFAULT_RUL_CAP = 125
