@@ -24,20 +24,20 @@ def test_nasa_phm08_perfect_prediction():
 
 def test_nasa_phm08_early_predictions():
     y_true = [100]
-    y_pred = [90]
-    # d = -10 (early prediction)
-    # score = exp(-(-10)/13) - 1 = exp(10/13) - 1
-    expected = np.exp(10.0 / 13.0) - 1.0
+    y_pred = [99]
+    # d = -1 (early prediction)
+    # score = exp(-(-1)/13) - 1 = exp(1/13) - 1
+    expected = np.exp(1.0 / 13.0) - 1.0
     score = nasa_phm08_score(y_true, y_pred)
     assert score > 0
     assert np.isclose(score, expected)
 
 def test_nasa_phm08_late_predictions():
     y_true = [100]
-    y_pred = [110]
-    # d = 10 (late prediction)
-    # score = exp(10/10) - 1 = exp(1) - 1
-    expected = np.exp(1.0) - 1.0
+    y_pred = [101]
+    # d = 1 (late prediction)
+    # score = exp(1/10) - 1
+    expected = np.exp(1.0 / 10.0) - 1.0
     score = nasa_phm08_score(y_true, y_pred)
     assert score > 0
     assert np.isclose(score, expected)
