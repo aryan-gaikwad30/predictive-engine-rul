@@ -19,6 +19,7 @@ def synthetic_split_data():
                 "setting_1": np.random.rand(),
                 "sensor_2": np.random.rand(),
                 "sensor_3": np.random.rand(),
+                "RUL": 200 - cycle,
                 "RUL_clipped": 150 - cycle
             })
     train_df = pd.DataFrame(train_data)
@@ -33,6 +34,7 @@ def synthetic_split_data():
                 "setting_1": np.random.rand(),
                 "sensor_2": np.random.rand(),
                 "sensor_3": np.random.rand(),
+                "RUL": 180 - cycle,
                 "RUL_clipped": 120 - cycle
             })
     val_df = pd.DataFrame(val_data)
@@ -81,9 +83,10 @@ def test_get_prediction_diagnostics(synthetic_split_data):
     assert "unit" in diag_df.columns
     assert "cycle" in diag_df.columns
     assert "actual_RUL" in diag_df.columns
+    assert "actual_RUL_clipped" in diag_df.columns
     assert "predicted_RUL" in diag_df.columns
     assert "error" in diag_df.columns
     
     # error = predicted - actual
-    expected_errors = y_pred.values - val_df["RUL_clipped"].values
+    expected_errors = y_pred.values - val_df["RUL"].values
     np.testing.assert_array_almost_equal(diag_df["error"].values, expected_errors)
