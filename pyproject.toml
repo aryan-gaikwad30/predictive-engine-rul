@@ -13,7 +13,9 @@ dependencies = [
     "matplotlib",
     "seaborn",
     "jupyter",
-    "pytest"
+    "pytest",
+    "scikit-learn",
+    "xgboost"
 ]
 
 [build-system]
