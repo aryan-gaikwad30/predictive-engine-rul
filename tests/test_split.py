@@ -34,7 +34,8 @@ def test_all_engines_preserved(sample_df):
 
 def test_all_rows_preserved(sample_df):
     train_df, val_df = split_by_engine(sample_df, validation_size=0.2)
-    assert len(train_df) + len(val_df) == len(sample_df)
+    combined = pd.concat([train_df, val_df]).sort_index()
+    pd.testing.assert_frame_equal(sample_df.sort_index(), combined, check_exact=True)
 
 def test_split_deterministic(sample_df):
     t1, v1 = get_engine_split_ids(sample_df, random_state=42)
@@ -98,4 +99,25 @@ def test_validate_engine_split_fails_missing(sample_df):
     first_engine = train_df["unit"].iloc[0]
     train_df = train_df[train_df["unit"] != first_engine]
     with pytest.raises(ValueError, match="Engines missing from splits"):
+        validate_engine_split(sample_df, train_df, val_df)
+
+def test_validate_engine_split_fails_duplicated_rows(sample_df):
+    train_df, val_df = split_by_engine(sample_df, validation_size=0.2)
+    # Duplicate a row in train_df
+    train_df = pd.concat([train_df, train_df.iloc[[-1]]])
+    with pytest.raises(ValueError, match="Row count mismatch"):
+        validate_engine_split(sample_df, train_df, val_df)
+
+def test_validate_engine_split_fails_missing_rows(sample_df):
+    train_df, val_df = split_by_engine(sample_df, validation_size=0.2)
+    # Remove a row from train_df
+    train_df = train_df.iloc[:-1]
+    with pytest.raises(ValueError, match="Row count mismatch"):
+        validate_engine_split(sample_df, train_df, val_df)
+
+def test_validate_engine_split_fails_altered_rows(sample_df):
+    train_df, val_df = split_by_engine(sample_df, validation_size=0.2)
+    # Alter a row's value
+    train_df.loc[train_df.index[0], "feature1"] = 999.0
+    with pytest.raises(ValueError, match="Exact row preservation failed"):
         validate_engine_split(sample_df, train_df, val_df)
