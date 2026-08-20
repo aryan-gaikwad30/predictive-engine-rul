@@ -42,3 +42,9 @@ artifacts/
 .idea/
 .DS_Store
 Thumbs.db
+.venv-cnn/
+*.keras
+*.h5
+*.ckpt
+logs/
+tensorboard/
