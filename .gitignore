@@ -30,8 +30,8 @@ data/raw/CMAPSSData/*
 data/processed/
 
 # ML artifacts
-models/
-artifacts/
+/models/
+/artifacts/
 *.pkl
 *.joblib
 *.pt
