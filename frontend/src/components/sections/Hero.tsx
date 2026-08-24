@@ -1,19 +1,20 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { ArrowRight, Activity } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function Hero() {
   const { scrollY } = useScroll();
-  const yText = useTransform(scrollY, [0, 500], [0, 150]);
-  const opacity = useTransform(scrollY, [0, 400], [1, 0]);
-  const scaleVisual = useTransform(scrollY, [0, 600], [1, 1.2]);
+  const prefersReducedMotion = useReducedMotion();
+  const yText = useTransform(scrollY, [0, 500], [0, prefersReducedMotion ? 0 : 150]);
+  const opacity = useTransform(scrollY, [0, 400], [1, prefersReducedMotion ? 1 : 0]);
+  const scaleVisual = useTransform(scrollY, [0, 600], [1, prefersReducedMotion ? 1 : 1.2]);
 
   // Synthetic data traces for background animation
   const [traces, setTraces] = useState<number[]>([]);
   useEffect(() => {
-    setTraces(Array.from({ length: 40 }, () => Math.random() * 100));
+    setTimeout(() => setTraces(Array.from({ length: 40 }, () => Math.random() * 100)), 0);
     const interval = setInterval(() => {
       setTraces(prev => prev.map(v => Math.max(10, Math.min(90, v + (Math.random() - 0.5) * 20))));
     }, 1500);
@@ -43,7 +44,7 @@ export default function Hero() {
           className="flex flex-col gap-8"
         >
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
@@ -64,7 +65,7 @@ export default function Hero() {
           </motion.p>
           
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
             className="flex flex-wrap gap-4"
@@ -87,7 +88,7 @@ export default function Hero() {
 
         {/* Right side abstract machine visual */}
         <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
           className="hidden lg:flex justify-center items-center relative h-[600px]"
@@ -95,8 +96,8 @@ export default function Hero() {
         >
           <div className="absolute inset-0 bg-gradient-to-tr from-[var(--color-industrial)]/20 to-transparent rounded-full blur-3xl" />
           <motion.div 
-            animate={{ rotate: 360 }}
-            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+            animate={prefersReducedMotion ? {} : { rotate: 360 }}
+            transition={prefersReducedMotion ? {} : { duration: 40, repeat: Infinity, ease: "linear" }}
             className="relative w-96 h-96 border-[1px] border-[var(--color-graphite)]/20 rounded-full flex items-center justify-center"
           >
             <Activity className="w-32 h-32 text-[var(--color-industrial)] opacity-80" strokeWidth={1} />

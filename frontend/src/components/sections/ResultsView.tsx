@@ -1,29 +1,30 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { PredictionResponse } from "@/lib/api";
+import { motion, useReducedMotion } from "framer-motion";
+import { PredictionResponse, PredictionRow } from "@/lib/api";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 import { useMemo, useState } from "react";
 
 export default function ResultsView({ results }: { results: PredictionResponse }) {
-  const { metrics, feature_importance, maintenance_metrics, predictions, dataset_metadata } = results;
+  const { metrics, feature_importance, predictions, dataset_metadata } = results;
   const [selectedMachine, setSelectedMachine] = useState<number | string | null>(null);
+  const prefersReducedMotion = useReducedMotion();
 
   // Group predictions by machine for the RUL chart
   const machineGroups = useMemo(() => {
     if (!predictions) return {};
-    const groups: Record<string, any[]> = {};
-    const entityCol = dataset_metadata?.entity_column || 'unit_number';
-    const timeCol = dataset_metadata?.time_column || 'time_cycles';
+    const groups: Record<string, PredictionRow[]> = {};
+    const entityCol = dataset_metadata?.entity_column as string || 'unit_number';
+    const timeCol = dataset_metadata?.time_column as string || 'time_cycles';
     
     predictions.forEach(p => {
-      const m = p[entityCol];
+      const m = String(p[entityCol]);
       if (!groups[m]) groups[m] = [];
       groups[m].push(p);
     });
     
     // Sort by time
-    Object.values(groups).forEach(g => g.sort((a, b) => a[timeCol] - b[timeCol]));
+    Object.values(groups).forEach(g => g.sort((a, b) => (a[timeCol] as number) - (b[timeCol] as number)));
     return groups;
   }, [predictions, dataset_metadata]);
 
@@ -31,7 +32,7 @@ export default function ResultsView({ results }: { results: PredictionResponse }
   const activeMachine = selectedMachine || (machineList.length > 0 ? machineList[0] : null);
   const chartData = activeMachine ? machineGroups[activeMachine] : [];
   
-  const timeCol = dataset_metadata?.time_column || 'time';
+  const timeCol = (dataset_metadata?.time_column as string) || 'time';
 
   if (!metrics) return null;
 
@@ -42,7 +43,7 @@ export default function ResultsView({ results }: { results: PredictionResponse }
         <div className="absolute inset-0 bg-[var(--color-industrial)]/10 blur-3xl transform -translate-y-1/2 rounded-full" />
         <div className="container mx-auto px-6 max-w-6xl relative z-10">
           <motion.h2 
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="text-5xl md:text-8xl font-bold tracking-tighter uppercase leading-[0.9] mb-24"
           >
             Your Machines <br/>
@@ -86,9 +87,9 @@ export default function ResultsView({ results }: { results: PredictionResponse }
                   itemStyle={{ color: '#fff' }}
                 />
                 <ReferenceLine y={30} label={{ position: 'top', value: 'Critical', fill: '#ff4d00', fontSize: 12 }} stroke="#ff4d00" strokeDasharray="3 3" />
-                <Line type="monotone" dataKey="predicted_rul" name="Predicted RUL" stroke="var(--color-industrial)" strokeWidth={3} dot={false} />
+                <Line type="monotone" dataKey="predicted_rul" name="Predicted RUL" stroke="var(--color-industrial)" strokeWidth={3} dot={false} isAnimationActive={!prefersReducedMotion} />
                 {chartData.length > 0 && chartData[0].actual_rul !== undefined && (
-                  <Line type="monotone" dataKey="actual_rul" name="Actual RUL" stroke="#1c1c1c" strokeWidth={2} strokeDasharray="5 5" dot={false} opacity={0.5} />
+                  <Line type="monotone" dataKey="actual_rul" name="Actual RUL" stroke="#1c1c1c" strokeWidth={2} strokeDasharray="5 5" dot={false} opacity={0.5} isAnimationActive={!prefersReducedMotion} />
                 )}
               </LineChart>
             </ResponsiveContainer>
@@ -153,7 +154,7 @@ export default function ResultsView({ results }: { results: PredictionResponse }
                     </div>
                     <div className="h-4 w-full bg-gray-200 rounded-full overflow-hidden">
                       <motion.div 
-                        initial={{ width: 0 }}
+                        initial={{ width: prefersReducedMotion ? `${feat.importance * 100}%` : 0 }}
                         whileInView={{ width: `${feat.importance * 100}%` }}
                         viewport={{ once: true }}
                         transition={{ duration: 1, delay: i * 0.1, ease: "easeOut" }}
@@ -173,10 +174,10 @@ export default function ResultsView({ results }: { results: PredictionResponse }
       <section className="py-32 bg-[var(--color-industrial)] text-white text-center">
         <div className="container mx-auto px-6 max-w-4xl">
            <motion.h2 
-             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+             initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
              className="text-5xl md:text-7xl font-bold tracking-tighter uppercase mb-8"
            >
-             Don't Wait <br/> For Failure.
+             Don&apos;t Wait <br/> For Failure.
            </motion.h2>
            <p className="text-2xl font-light mb-12">Turn your machine data into a maintenance decision.</p>
            <button 
@@ -192,9 +193,10 @@ export default function ResultsView({ results }: { results: PredictionResponse }
 }
 
 function MetricBlock({ label, value }: { label: string, value: string }) {
+  const prefersReducedMotion = useReducedMotion();
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+      initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
       className="flex flex-col"
     >
       <div className="text-4xl md:text-6xl font-bold mb-4">{value}</div>

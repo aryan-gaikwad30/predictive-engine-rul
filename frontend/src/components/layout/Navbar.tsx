@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import { cn } from "@/lib/utils";
+
 
 export default function Navbar() {
   const { scrollY } = useScroll();

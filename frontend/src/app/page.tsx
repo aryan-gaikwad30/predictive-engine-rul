@@ -8,7 +8,8 @@ import UploadSection from "@/components/sections/UploadSection";
 import ProfileAndConfig from "@/components/sections/ProfileAndConfig";
 import TrainingSequence from "@/components/sections/TrainingSequence";
 import ResultsView from "@/components/sections/ResultsView";
-import { uploadProfile, startTraining, pollJobStatus, getPredictions, ProfileResponse, PredictionResponse } from "@/lib/api";
+import * as api from "@/lib/api";
+import { ProfileResponse, PredictionResponse } from "@/lib/api";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
@@ -27,14 +28,14 @@ export default function Home() {
     setUploadError(null);
     try {
       setFile(uploadedFile);
-      const res = await uploadProfile(uploadedFile);
+      const res = await api.uploadProfile(uploadedFile);
       setProfile(res);
       // Scroll to profile
       setTimeout(() => {
         document.getElementById('profile')?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
-    } catch (err: any) {
-      setUploadError(err.message || "Failed to upload file");
+    } catch (err) {
+      setUploadError((err as Error).message || "Failed to upload file");
       setFile(null);
     } finally {
       setIsUploading(false);
@@ -49,43 +50,38 @@ export default function Home() {
       const blob = await response.blob();
       const demoFile = new File([blob], 'demo_dataset.csv', { type: 'text/csv' });
       await handleUploadSuccess(demoFile);
-    } catch (err: any) {
+    } catch {
       setUploadError("Failed to load demo dataset");
       setIsUploading(false);
     }
   };
 
-  const handleTrain = async (config: any) => {
+  const handleTrain = async (config: { entity_column?: string; time_column?: string; target_column?: string; feature_columns?: string; condition_columns?: string }) => {
     if (!file) return;
     setIsTraining(true);
     try {
-      const res = await startTraining(file, config);
-      setTrainingJobId(res.job_id);
-      
-      // Because M16 is currently synchronous under the hood, 
-      // startTraining actually waits for the job to complete on the backend 
-      // before returning (unless they implemented background tasks).
-      // We will pretend to poll to respect the contract, but it's likely done.
-      let isDone = false;
-      while (!isDone) {
-        const statusRes = await pollJobStatus(res.job_id);
-        if (statusRes.status === "completed") {
-          isDone = true;
+      const { job_id } = await api.startTraining(file, config);
+      setTrainingJobId(job_id);
+
+      while (true) {
+        const status = await api.pollJobStatus(job_id);
+        if (status.status === 'completed') {
           setIsTrainingComplete(true);
-          const predRes = await getPredictions(res.job_id);
-          setResults(predRes);
-          // Scroll to results
+          const finalResults = await api.getPredictions(job_id);
+          setResults(finalResults);
+          
           setTimeout(() => {
             document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' });
           }, 1500);
-        } else if (statusRes.status === "failed") {
+          break;
+        } else if (status.status === 'failed') {
           throw new Error("Training failed");
         } else {
           await new Promise(r => setTimeout(r, 1000));
         }
       }
-    } catch (err: any) {
-      alert("Training error: " + err.message);
+    } catch (err: unknown) {
+      alert("Training error: " + (err as Error).message);
       setIsTraining(false);
     }
   };
@@ -111,8 +107,10 @@ export default function Home() {
         <ProfileAndConfig profile={profile} onTrain={handleTrain} />
       )}
 
-      {isTraining && !results && (
-        <TrainingSequence jobId={trainingJobId || ""} isComplete={isTrainingComplete} />
+      {isTraining && trainingJobId && (
+        <TrainingSequence 
+          isComplete={isTrainingComplete} 
+        />
       )}
 
       {results && (

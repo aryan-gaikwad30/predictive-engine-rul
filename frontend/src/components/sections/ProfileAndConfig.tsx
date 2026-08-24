@@ -1,19 +1,20 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ProfileResponse } from "@/lib/api";
 import { useState } from "react";
 import { AlertCircle, Database, Check } from "lucide-react";
 
 interface ProfileAndConfigProps {
   profile: ProfileResponse;
-  onTrain: (config: any) => void;
+  onTrain: (config: { entity_column?: string; time_column?: string; target_column?: string; feature_columns?: string; condition_columns?: string }) => void;
 }
 
 export default function ProfileAndConfig({ profile, onTrain }: ProfileAndConfigProps) {
   const [entityCol, setEntityCol] = useState(profile.detected_entity || "");
   const [timeCol, setTimeCol] = useState(profile.detected_time || "");
   const [targetCol, setTargetCol] = useState(profile.detected_target || "");
+  const prefersReducedMotion = useReducedMotion();
 
   const hasAmbiguity = !profile.detected_entity || !profile.detected_time || !profile.detected_target;
 
@@ -22,14 +23,14 @@ export default function ProfileAndConfig({ profile, onTrain }: ProfileAndConfigP
       <div className="container mx-auto px-6 max-w-6xl">
         
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
-          <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+          <motion.div initial={{ opacity: 0, x: prefersReducedMotion ? 0 : -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
             <h2 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase text-[var(--color-graphite)]">
               Dataset Profile
             </h2>
           </motion.div>
           {profile.warnings.length > 0 && (
             <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
+              initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
               className="flex items-center gap-2 bg-orange-50 text-[var(--color-industrial)] px-4 py-2 rounded-full font-medium border border-orange-100"
             >
               <AlertCircle className="w-5 h-5" />
@@ -40,7 +41,7 @@ export default function ProfileAndConfig({ profile, onTrain }: ProfileAndConfigP
 
         <div className="grid md:grid-cols-3 gap-6 mb-16">
           <motion.div 
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: prefersReducedMotion ? 0 : 0.1 }}
             className="p-8 bg-[var(--color-offwhite)] rounded-3xl"
           >
             <Database className="w-8 h-8 mb-4 text-gray-400" />
@@ -51,7 +52,7 @@ export default function ProfileAndConfig({ profile, onTrain }: ProfileAndConfigP
           </motion.div>
 
           <motion.div 
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: prefersReducedMotion ? 0 : 0.2 }}
             className="p-8 bg-[var(--color-offwhite)] rounded-3xl"
           >
             <div className="w-8 h-8 mb-4 border-2 border-gray-400 rounded-sm" />
@@ -62,7 +63,7 @@ export default function ProfileAndConfig({ profile, onTrain }: ProfileAndConfigP
           </motion.div>
 
           <motion.div 
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }}
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: prefersReducedMotion ? 0 : 0.3 }}
             className="p-8 bg-[var(--color-offwhite)] rounded-3xl"
           >
             <div className="w-8 h-8 mb-4 flex gap-1">
@@ -79,7 +80,7 @@ export default function ProfileAndConfig({ profile, onTrain }: ProfileAndConfigP
 
         {hasAmbiguity ? (
           <motion.div 
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="border-2 border-[var(--color-industrial)] rounded-3xl p-8 md:p-12 bg-white mb-16"
           >
             <h3 className="text-3xl font-bold mb-4 uppercase">We Need Your Input.</h3>
@@ -125,7 +126,7 @@ export default function ProfileAndConfig({ profile, onTrain }: ProfileAndConfigP
           </motion.div>
         ) : (
           <motion.div 
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="flex items-start md:items-center justify-between flex-col md:flex-row gap-6 p-8 border border-gray-200 bg-gray-50 rounded-3xl mb-16"
           >
             <div>
@@ -144,8 +145,8 @@ export default function ProfileAndConfig({ profile, onTrain }: ProfileAndConfigP
 
         <div className="flex justify-center">
           <motion.button 
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={prefersReducedMotion ? {} : { scale: 1.05 }}
+            whileTap={prefersReducedMotion ? {} : { scale: 0.95 }}
             disabled={!entityCol || !timeCol || !targetCol}
             onClick={() => onTrain({ entity_column: entityCol, time_column: timeCol, target_column: targetCol })}
             className="px-12 py-5 bg-[var(--color-graphite)] text-white text-xl font-bold uppercase tracking-wider rounded-full hover:bg-[var(--color-industrial)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

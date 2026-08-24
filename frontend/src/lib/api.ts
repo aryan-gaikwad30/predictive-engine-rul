@@ -57,7 +57,7 @@ export interface FeatureImportance {
 }
 
 export interface PredictionRow {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface PredictionResponse {
@@ -68,7 +68,7 @@ export interface PredictionResponse {
   feature_importance?: FeatureImportance[];
   maintenance_metrics?: MaintenanceMetric[];
   predictions?: PredictionRow[];
-  dataset_metadata?: any;
+  dataset_metadata?: Record<string, unknown>;
 }
 
 export const getHealth = async () => {

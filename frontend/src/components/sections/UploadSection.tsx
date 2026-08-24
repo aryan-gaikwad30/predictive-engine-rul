@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { UploadCloud, File as FileIcon, X, CheckCircle } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { UploadCloud, File as FileIcon, CheckCircle } from "lucide-react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 interface UploadSectionProps {
   onUploadSuccess: (file: File) => void;
@@ -14,6 +14,7 @@ interface UploadSectionProps {
 export default function UploadSection({ onUploadSuccess, onDemoRequest, isUploading, error }: UploadSectionProps) {
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const prefersReducedMotion = useReducedMotion();
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -55,7 +56,7 @@ export default function UploadSection({ onUploadSuccess, onDemoRequest, isUpload
     <section className="py-32 bg-[var(--color-offwhite)] relative" id="analyze">
       <div className="container mx-auto px-6 max-w-4xl">
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           className="text-center mb-16"
@@ -69,7 +70,7 @@ export default function UploadSection({ onUploadSuccess, onDemoRequest, isUpload
         </motion.div>
 
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           className={`
@@ -155,7 +156,7 @@ export default function UploadSection({ onUploadSuccess, onDemoRequest, isUpload
         )}
 
         <div className="mt-16 text-center">
-          <p className="text-gray-500 mb-4">Don't have a dataset ready?</p>
+          <p className="text-gray-500 mb-4">Don&apos;t have a dataset ready?</p>
           <button 
             onClick={onDemoRequest}
             disabled={isUploading}

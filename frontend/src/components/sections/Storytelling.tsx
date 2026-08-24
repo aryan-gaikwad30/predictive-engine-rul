@@ -1,17 +1,19 @@
 "use client";
 
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { motion, useScroll, useTransform, useInView, useReducedMotion } from "framer-motion";
 import { useRef } from "react";
 
 const FadeText = ({ children }: { children: React.ReactNode }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { margin: "-20% 0px -20% 0px" });
   
+  const prefersReducedMotion = useReducedMotion();
+  
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 50 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+      initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 50 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: prefersReducedMotion ? 0 : 50 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
       className="py-12"
     >
@@ -26,8 +28,13 @@ export default function Storytelling() {
     target: containerRef,
     offset: ["start end", "end start"]
   });
-
+  
+  const prefersReducedMotion = useReducedMotion();
   const pathLength = useTransform(scrollYProgress, [0.1, 0.9], [0, 1]);
+  const width1 = useTransform(scrollYProgress, [0, 0.4], ["0%", "100%"]);
+  const width2 = useTransform(scrollYProgress, [0.2, 0.6], ["0%", "100%"]);
+  const width3 = useTransform(scrollYProgress, [0.4, 0.8], ["0%", "100%"]);
+  const opacityVal = useTransform(scrollYProgress, [0.7, 0.9], [0, 1]);
 
   return (
     <section ref={containerRef} className="py-32 bg-[var(--color-graphite)] text-white relative" id="how-it-works">
@@ -36,7 +43,7 @@ export default function Storytelling() {
       <div className="absolute left-8 lg:left-1/2 top-0 bottom-0 w-px bg-white/10 hidden md:block">
         <motion.div 
           className="absolute top-0 left-0 right-0 bg-[var(--color-industrial)] origin-top"
-          style={{ scaleY: pathLength, height: "100%" }}
+          style={{ scaleY: prefersReducedMotion ? 1 : pathLength, height: "100%" }}
         />
       </div>
 
@@ -59,7 +66,7 @@ export default function Storytelling() {
             <FadeText>
               <h3 className="text-4xl font-light mb-4 text-[var(--color-industrial)]">02. SIGNAL</h3>
               <p className="text-2xl font-medium tracking-tight text-gray-300">
-                Raw data alone doesn't tell you when failure is coming. But within the noise, patterns reveal microscopic degradation.
+                Raw data alone doesn&apos;t tell you when failure is coming. But within the noise, patterns reveal microscopic degradation.
               </p>
             </FadeText>
 
@@ -83,15 +90,15 @@ export default function Storytelling() {
                 <div className="absolute inset-0 bg-[var(--color-industrial)]/5 blur-3xl rounded-full" />
                 {/* Abstract Data vis changing based on scroll */}
                 <motion.div className="h-1 bg-white/20 w-full overflow-hidden">
-                  <motion.div className="h-full bg-[var(--color-industrial)]" style={{ width: useTransform(scrollYProgress, [0, 0.4], ["0%", "100%"]) }} />
+                  <motion.div className="h-full bg-[var(--color-industrial)]" style={{ width: prefersReducedMotion ? "100%" : width1 }} />
                 </motion.div>
                 <motion.div className="h-1 bg-white/20 w-3/4 overflow-hidden">
-                  <motion.div className="h-full bg-[var(--color-industrial)]" style={{ width: useTransform(scrollYProgress, [0.2, 0.6], ["0%", "100%"]) }} />
+                  <motion.div className="h-full bg-[var(--color-industrial)]" style={{ width: prefersReducedMotion ? "100%" : width2 }} />
                 </motion.div>
                 <motion.div className="h-1 bg-white/20 w-5/6 overflow-hidden">
-                  <motion.div className="h-full bg-[var(--color-industrial)]" style={{ width: useTransform(scrollYProgress, [0.4, 0.8], ["0%", "100%"]) }} />
+                  <motion.div className="h-full bg-[var(--color-industrial)]" style={{ width: prefersReducedMotion ? "100%" : width3 }} />
                 </motion.div>
-                <motion.div className="mt-8 text-center" style={{ opacity: useTransform(scrollYProgress, [0.7, 0.9], [0, 1]) }}>
+                <motion.div className="mt-8 text-center" style={{ opacity: prefersReducedMotion ? 1 : opacityVal }}>
                   <div className="text-6xl font-bold">42</div>
                   <div className="text-sm tracking-widest uppercase text-[var(--color-industrial)] mt-2">Cycles Remaining</div>
                 </motion.div>

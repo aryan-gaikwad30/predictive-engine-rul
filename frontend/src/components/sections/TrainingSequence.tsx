@@ -1,11 +1,9 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
 
 interface TrainingSequenceProps {
-  jobId: string;
   isComplete: boolean;
 }
 
@@ -18,12 +16,13 @@ const STAGES = [
   "Model Ready"
 ];
 
-export default function TrainingSequence({ jobId, isComplete }: TrainingSequenceProps) {
+export default function TrainingSequence({ isComplete }: TrainingSequenceProps) {
   const [currentStage, setCurrentStage] = useState(0);
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     if (isComplete) {
-      setCurrentStage(STAGES.length - 1);
+      setTimeout(() => setCurrentStage(STAGES.length - 1), 0);
       return;
     }
     
@@ -46,13 +45,13 @@ export default function TrainingSequence({ jobId, isComplete }: TrainingSequence
         
         <div className="relative h-64 flex flex-col items-center justify-center mb-16">
           <motion.div 
-            animate={{ rotate: 360 }}
-            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+            animate={prefersReducedMotion ? {} : { rotate: 360 }}
+            transition={prefersReducedMotion ? {} : { duration: 8, repeat: Infinity, ease: "linear" }}
             className="w-48 h-48 border-t-2 border-r-2 border-white/10 rounded-full absolute"
           />
           <motion.div 
-            animate={{ rotate: -360 }}
-            transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+            animate={prefersReducedMotion ? {} : { rotate: -360 }}
+            transition={prefersReducedMotion ? {} : { duration: 12, repeat: Infinity, ease: "linear" }}
             className="w-32 h-32 border-b-2 border-l-2 border-[var(--color-industrial)] rounded-full absolute"
           />
           
