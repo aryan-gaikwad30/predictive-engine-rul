@@ -4,6 +4,12 @@ from typing import List, Dict, Optional, Any, Union
 class HealthResponse(BaseModel):
     status: str
     service: str
+    version: str
+
+class ErrorDetail(BaseModel):
+    code: str
+    message: str
+    details: Optional[str] = None
 
 class ProfileResponse(BaseModel):
     row_count: int
@@ -60,4 +66,4 @@ class PredictionResponse(BaseModel):
     predictions: Optional[List[Dict[str, Any]]] = None
     entity_diagnostics: Optional[List[Dict[str, Any]]] = None
     dataset_metadata: Optional[Dict[str, Any]] = None
-    error: Optional[str] = None
+    error: Optional[ErrorDetail] = None

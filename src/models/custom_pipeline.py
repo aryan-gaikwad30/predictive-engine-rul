@@ -52,7 +52,7 @@ def train_custom_xgboost(dataset: PreparedDataset, validation_size: float = 0.2,
     # 3. Train-only feature selection (remove exact constants)
     stats_df = calculate_feature_statistics(train_df, initial_features)
     removed_constant_features = find_constant_features(stats_df, variance_threshold=0.0)
-    selected_features = [f for f in initial_features if f not in removed_constant_features]
+    selected_features = sorted([f for f in initial_features if f not in removed_constant_features])
     
     # 4. Preprocessing (Train-only fit, transform both)
     if condition_cols:

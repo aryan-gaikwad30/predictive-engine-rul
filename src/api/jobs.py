@@ -17,7 +17,7 @@ def create_job() -> str:
     }
     return job_id
 
-def update_job_status(job_id: str, status: str, result: Optional[Dict[str, Any]] = None, error: Optional[str] = None) -> None:
+def update_job_status(job_id: str, status: str, result: Optional[Dict[str, Any]] = None, error: Optional[Dict[str, str]] = None) -> None:
     """Update a job's status and potentially its result or error."""
     if job_id in _jobs:
         _jobs[job_id]["status"] = status

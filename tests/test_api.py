@@ -39,7 +39,7 @@ def reset_jobs():
 def test_health():
     response = client.get("/health")
     assert response.status_code == 200
-    assert response.json() == {"status": "ok", "service": "predictive-engine-rul"}
+    assert response.json() == {"status": "ok", "service": "predictive-engine-rul", "version": "0.1.0"}
 
 def test_profile_valid_csv():
     csv_bytes = create_csv_file()
@@ -62,7 +62,7 @@ def test_profile_invalid_file_type():
         files={"file": ("dataset.txt", io.BytesIO(b"hello world"), "text/plain")}
     )
     assert response.status_code == 400
-    assert "Only CSV files are supported" in response.json()["detail"]
+    assert "Only CSV files are supported" in response.json()["detail"]["message"]
 
 def test_train_valid_dataset():
     csv_bytes = create_csv_file()
@@ -111,9 +111,9 @@ def test_train_missing_target_returns_error():
         files={"file": ("dataset.csv", io.BytesIO(csv_bytes), "text/csv")}
     )
     
-    # Expect 400 due to ambiguous or missing target
-    assert response.status_code == 400
-    assert "Entity, time, and target columns must be unambiguously detected or explicitly provided" in response.json()["detail"]
+    # Expect 422 due to ambiguous or missing target (validation error)
+    assert response.status_code == 422
+    assert "Entity, time, and target columns must be unambiguously detected or explicitly provided" in response.json()["detail"]["message"]
 
 def test_unknown_job_returns_404():
     response = client.get("/job/unknown-id")

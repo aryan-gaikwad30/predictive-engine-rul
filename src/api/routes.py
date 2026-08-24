@@ -1,37 +1,56 @@
 import io
+import os
 import json
 import pandas as pd
 from typing import List, Optional
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Response
 
 from src.api.schemas import (
     HealthResponse, ProfileResponse, TrainResponse, 
-    JobStatusResponse, PredictionResponse
+    JobStatusResponse, PredictionResponse, ErrorDetail
 )
 from src.api.jobs import create_job, update_job_status, get_job
 
 from src.data.profiling import profile_dataset, prepare_custom_dataset, DatasetConfig
 from src.models.custom_pipeline import train_custom_xgboost
 
+APP_VERSION = "0.1.0"
+
 router = APIRouter()
+
+def get_max_upload_size() -> int:
+    return int(os.environ.get("MAX_UPLOAD_SIZE", 10485760)) # Default 10 MB
+
+def raise_api_error(status_code: int, code: str, message: str, details: str = None):
+    error_detail = ErrorDetail(code=code, message=message, details=details).model_dump()
+    raise HTTPException(status_code=status_code, detail=error_detail)
 
 @router.get("/health", response_model=HealthResponse)
 def health_check():
-    return HealthResponse(status="ok", service="predictive-engine-rul")
+    return HealthResponse(status="ok", service="predictive-engine-rul", version=APP_VERSION)
 
 @router.post("/profile", response_model=ProfileResponse)
 def profile_data(file: UploadFile = File(...)):
-    if not file.filename.endswith('.csv'):
-        raise HTTPException(status_code=400, detail="Only CSV files are supported")
+    if not file:
+        raise_api_error(400, "MISSING_FILE", "No file uploaded.")
+    if not file.filename.lower().endswith('.csv'):
+        raise_api_error(400, "INVALID_EXTENSION", "Only CSV files are supported.")
         
     try:
         content = file.file.read()
+    except Exception as e:
+        raise_api_error(400, "UNREADABLE_FILE", "Failed to read uploaded file.", str(e))
+        
+    if not content:
+        raise_api_error(400, "EMPTY_FILE", "The uploaded file is empty.")
+        
+    if len(content) > get_max_upload_size():
+        raise_api_error(400, "FILE_TOO_LARGE", f"File size exceeds maximum allowed size ({get_max_upload_size()} bytes).")
+
+    try:
         df = pd.read_csv(io.BytesIO(content))
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Failed to read CSV file: {str(e)}")
-        
-    if len(df) > 100000:
-        raise HTTPException(status_code=400, detail="File too large for prototype (max 100,000 rows)")
+        raise_api_error(400, "MALFORMED_CSV", "Failed to parse CSV content.", str(e))
         
     profile = profile_dataset(df)
     
@@ -65,17 +84,26 @@ def train_model(
     feature_columns: Optional[str] = Form(None),
     condition_columns: Optional[str] = Form(None)
 ):
-    if not file.filename.endswith('.csv'):
-        raise HTTPException(status_code=400, detail="Only CSV files are supported")
+    if not file:
+        raise_api_error(400, "MISSING_FILE", "No file uploaded.")
+    if not file.filename.lower().endswith('.csv'):
+        raise_api_error(400, "INVALID_EXTENSION", "Only CSV files are supported.")
         
     try:
         content = file.file.read()
+    except Exception as e:
+        raise_api_error(400, "UNREADABLE_FILE", "Failed to read uploaded file.", str(e))
+        
+    if not content:
+        raise_api_error(400, "EMPTY_FILE", "The uploaded file is empty.")
+        
+    if len(content) > get_max_upload_size():
+        raise_api_error(400, "FILE_TOO_LARGE", f"File size exceeds maximum allowed size ({get_max_upload_size()} bytes).")
+
+    try:
         df = pd.read_csv(io.BytesIO(content))
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Failed to read CSV file: {str(e)}")
-        
-    if len(df) > 100000:
-        raise HTTPException(status_code=400, detail="File too large for prototype (max 100,000 rows)")
+        raise_api_error(400, "MALFORMED_CSV", "Failed to parse CSV content.", str(e))
         
     # Parse comma separated lists if provided
     feat_cols = [c.strip() for c in feature_columns.split(",")] if feature_columns else None
@@ -90,7 +118,6 @@ def train_model(
         condition_columns=cond_cols
     )
     
-    # Synchronous processing for prototype, but wrap in a job structure
     job_id = create_job()
     update_job_status(job_id, "running")
     
@@ -102,7 +129,6 @@ def train_model(
             
         result = train_custom_xgboost(dataset)
         
-        # Convert DataFrames to dicts for JSON serialization
         res_dict = {
             "metrics": result.metrics,
             "feature_importance": result.feature_importance.to_dict(orient="records"),
@@ -115,11 +141,13 @@ def train_model(
         update_job_status(job_id, "completed", result=res_dict)
         
     except ValueError as e:
-        update_job_status(job_id, "failed", error=str(e))
-        raise HTTPException(status_code=400, detail=str(e))
+        err = ErrorDetail(code="VALIDATION_ERROR", message=str(e)).model_dump()
+        update_job_status(job_id, "failed", error=err)
+        raise_api_error(422, "VALIDATION_ERROR", str(e))
     except Exception as e:
-        update_job_status(job_id, "failed", error=str(e))
-        raise HTTPException(status_code=500, detail="Training failed internally.")
+        err = ErrorDetail(code="INTERNAL_ERROR", message="Training failed internally.", details=str(e)).model_dump()
+        update_job_status(job_id, "failed", error=err)
+        raise_api_error(500, "INTERNAL_ERROR", "Training failed internally.")
         
     return TrainResponse(job_id=job_id, status="completed")
 
@@ -127,7 +155,7 @@ def train_model(
 def get_job_status(job_id: str):
     job = get_job(job_id)
     if not job:
-        raise HTTPException(status_code=404, detail="Job not found")
+        raise_api_error(404, "JOB_NOT_FOUND", "The requested job ID was not found.")
         
     return JobStatusResponse(job_id=job_id, status=job["status"])
 
@@ -135,10 +163,12 @@ def get_job_status(job_id: str):
 def get_prediction(job_id: str):
     job = get_job(job_id)
     if not job:
-        raise HTTPException(status_code=404, detail="Job not found")
+        raise_api_error(404, "JOB_NOT_FOUND", "The requested job ID was not found.")
         
     if job["status"] == "failed":
-        return PredictionResponse(job_id=job_id, status="failed", error=job["error"])
+        # job["error"] is a dict representing ErrorDetail
+        err_dict = job.get("error", {"code": "UNKNOWN", "message": "Unknown error occurred"})
+        return PredictionResponse(job_id=job_id, status="failed", error=ErrorDetail(**err_dict))
         
     if job["status"] != "completed":
         return PredictionResponse(job_id=job_id, status=job["status"])

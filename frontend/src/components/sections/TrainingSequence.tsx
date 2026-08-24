@@ -26,73 +26,77 @@ export default function TrainingSequence({ isComplete }: TrainingSequenceProps) 
       return;
     }
     
-    // Simulate progression while waiting for the synchronous backend to return
-    // Since it's synchronous but we might wrap it in async polling later, 
-    // we fake the stages to give the "cinematic" feel requested.
     const interval = setInterval(() => {
       setCurrentStage(prev => {
         if (prev < STAGES.length - 2) return prev + 1;
         return prev;
       });
-    }, 1500);
+    }, 1200);
     
     return () => clearInterval(interval);
   }, [isComplete]);
 
   return (
-    <section className="py-32 bg-[var(--color-graphite)] text-white min-h-screen flex items-center justify-center">
-      <div className="container mx-auto px-6 max-w-4xl text-center">
+    <section className="py-32 bg-[var(--color-surface)] min-h-[80vh] flex items-center justify-center relative overflow-hidden">
+      
+      {/* Background ambient motion */}
+      <motion.div 
+        className="absolute inset-0 z-0 opacity-30 pointer-events-none"
+        animate={prefersReducedMotion ? {} : {
+          background: [
+            "radial-gradient(circle at 20% 50%, var(--color-industrial) 0%, transparent 40%)",
+            "radial-gradient(circle at 80% 50%, var(--color-industrial) 0%, transparent 40%)",
+            "radial-gradient(circle at 20% 50%, var(--color-industrial) 0%, transparent 40%)"
+          ]
+        }}
+        transition={prefersReducedMotion ? {} : { duration: 10, repeat: Infinity, ease: "linear" }}
+        style={{ filter: "blur(100px)" }}
+      />
+
+      <div className="container mx-auto px-6 max-w-4xl text-center relative z-10">
         
-        <div className="relative h-64 flex flex-col items-center justify-center mb-16">
-          <motion.div 
-            animate={prefersReducedMotion ? {} : { rotate: 360 }}
-            transition={prefersReducedMotion ? {} : { duration: 8, repeat: Infinity, ease: "linear" }}
-            className="w-48 h-48 border-t-2 border-r-2 border-white/10 rounded-full absolute"
-          />
-          <motion.div 
-            animate={prefersReducedMotion ? {} : { rotate: -360 }}
-            transition={prefersReducedMotion ? {} : { duration: 12, repeat: Infinity, ease: "linear" }}
-            className="w-32 h-32 border-b-2 border-l-2 border-[var(--color-industrial)] rounded-full absolute"
-          />
+        {/* Animated Pipeline Visual */}
+        <div className="relative h-48 flex items-center justify-center mb-16">
+          <div className="w-full max-w-2xl h-1 bg-[var(--color-border)] rounded-full relative overflow-hidden">
+             <motion.div 
+               className="absolute top-0 bottom-0 left-0 bg-[var(--color-industrial)] rounded-full"
+               initial={{ width: "0%" }}
+               animate={{ width: `${(currentStage / (STAGES.length - 1)) * 100}%` }}
+               transition={{ duration: 1, ease: "easeInOut" }}
+             />
+          </div>
           
+          <div className="absolute inset-0 flex justify-between items-center max-w-2xl mx-auto">
+             {STAGES.map((_, i) => (
+               <motion.div 
+                 key={i}
+                 className={`w-4 h-4 rounded-full border-2 transition-colors duration-500 z-10 ${i <= currentStage ? 'bg-[var(--color-industrial)] border-[var(--color-industrial)]' : 'bg-white border-[var(--color-border)]'}`}
+                 initial={{ scale: 0.8 }}
+                 animate={{ scale: i === currentStage ? [1, 1.3, 1] : 1 }}
+                 transition={i === currentStage ? { duration: 1, repeat: Infinity } : {}}
+               />
+             ))}
+          </div>
+        </div>
+
+        <div className="h-32">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStage}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.5 }}
-              className="text-2xl font-light tracking-widest uppercase text-[var(--color-industrial)] absolute"
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
             >
-              {String(currentStage + 1).padStart(2, '0')}
+               <div className="text-sm font-bold uppercase tracking-widest text-[var(--color-industrial)] mb-4">
+                 Phase {String(currentStage + 1).padStart(2, '0')}
+               </div>
+               <h2 className="text-4xl md:text-6xl font-bold tracking-tighter uppercase text-[var(--color-graphite)]">
+                 {STAGES[currentStage]}
+               </h2>
             </motion.div>
           </AnimatePresence>
         </div>
-
-        <div className="h-24">
-          <AnimatePresence mode="wait">
-            <motion.h2
-              key={currentStage}
-              initial={{ opacity: 0, filter: "blur(10px)" }}
-              animate={{ opacity: 1, filter: "blur(0px)" }}
-              exit={{ opacity: 0, filter: "blur(10px)" }}
-              transition={{ duration: 0.8 }}
-              className="text-4xl md:text-6xl font-bold tracking-tighter uppercase"
-            >
-              {STAGES[currentStage]}
-            </motion.h2>
-          </AnimatePresence>
-        </div>
-        
-        <div className="mt-8 flex justify-center gap-2">
-           {STAGES.map((_, i) => (
-             <div 
-                key={i} 
-                className={`h-1 transition-all duration-500 rounded-full ${i <= currentStage ? 'w-16 bg-[var(--color-industrial)]' : 'w-4 bg-white/20'}`}
-             />
-           ))}
-        </div>
-
       </div>
     </section>
   );

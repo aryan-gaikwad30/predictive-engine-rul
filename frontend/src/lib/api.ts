@@ -1,5 +1,11 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
+export interface ErrorDetail {
+  code: string;
+  message: string;
+  details?: string;
+}
+
 export interface ProfileResponse {
   row_count: number;
   column_count: number;
@@ -33,7 +39,7 @@ export interface JobStatusResponse {
 export interface PredictionMetrics {
   RMSE: number;
   MAE: number;
-  NASA_score: number;
+  NASA_score: number | string;
   early_prediction_percentage: number;
   late_prediction_percentage: number;
   mean_signed_error: number;
@@ -45,7 +51,7 @@ export interface MaintenanceMetric {
   count: number;
   RMSE: number;
   MAE: number;
-  NASA_score: number;
+  NASA_score: number | string;
   mean_error: number;
   early_prediction_percentage: number;
   late_prediction_percentage: number;
@@ -63,17 +69,30 @@ export interface PredictionRow {
 export interface PredictionResponse {
   job_id: string;
   status: string;
-  error?: string;
+  error?: ErrorDetail;
   metrics?: PredictionMetrics;
   feature_importance?: FeatureImportance[];
   maintenance_metrics?: MaintenanceMetric[];
   predictions?: PredictionRow[];
   dataset_metadata?: Record<string, unknown>;
+  entity_diagnostics?: Record<string, unknown>[];
 }
+
+const parseApiError = async (res: Response) => {
+  try {
+    const errorBody = await res.json();
+    if (errorBody.detail && typeof errorBody.detail === "object" && errorBody.detail.message) {
+      return new Error(errorBody.detail.message);
+    }
+    return new Error(errorBody.detail || "Unknown API Error");
+  } catch {
+    return new Error("Unknown API Error");
+  }
+};
 
 export const getHealth = async () => {
   const res = await fetch(`${API_BASE}/health`);
-  if (!res.ok) throw new Error("Backend unavailable");
+  if (!res.ok) throw await parseApiError(res);
   return res.json();
 };
 
@@ -86,10 +105,7 @@ export const uploadProfile = async (file: File): Promise<ProfileResponse> => {
     body: formData,
   });
   
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.detail || "Failed to profile dataset");
-  }
+  if (!res.ok) throw await parseApiError(res);
   return res.json();
 };
 
@@ -99,6 +115,7 @@ export const startTraining = async (
     entity_column?: string; 
     time_column?: string; 
     target_column?: string; 
+    target_semantics?: string;
     feature_columns?: string; 
     condition_columns?: string 
   }
@@ -109,6 +126,7 @@ export const startTraining = async (
   if (config.entity_column) formData.append("entity_column", config.entity_column);
   if (config.time_column) formData.append("time_column", config.time_column);
   if (config.target_column) formData.append("target_column", config.target_column);
+  if (config.target_semantics) formData.append("target_semantics", config.target_semantics);
   if (config.feature_columns) formData.append("feature_columns", config.feature_columns);
   if (config.condition_columns) formData.append("condition_columns", config.condition_columns);
   
@@ -117,21 +135,18 @@ export const startTraining = async (
     body: formData,
   });
   
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.detail || "Failed to start training");
-  }
+  if (!res.ok) throw await parseApiError(res);
   return res.json();
 };
 
 export const pollJobStatus = async (jobId: string): Promise<JobStatusResponse> => {
   const res = await fetch(`${API_BASE}/job/${jobId}`);
-  if (!res.ok) throw new Error("Failed to get job status");
+  if (!res.ok) throw await parseApiError(res);
   return res.json();
 };
 
 export const getPredictions = async (jobId: string): Promise<PredictionResponse> => {
   const res = await fetch(`${API_BASE}/prediction/${jobId}`);
-  if (!res.ok) throw new Error("Failed to get predictions");
+  if (!res.ok) throw await parseApiError(res);
   return res.json();
 };

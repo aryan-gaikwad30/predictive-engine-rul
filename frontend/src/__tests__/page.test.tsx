@@ -41,13 +41,11 @@ describe('Commercial Frontend Workflow', () => {
     vi.clearAllMocks();
   });
 
-  test('1. Landing page and navigation render', () => {
+  it('1. Landing page and navigation render', () => {
     render(<Home />);
-    // Navbar
-    expect(screen.getByText('PREDICTIVE')).toBeInTheDocument();
     // Hero
     expect(screen.getByText(/Know When/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Analyze Your Data/i })).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /Analyze Your Data/i })[0]).toBeInTheDocument();
     // Storytelling
     expect(screen.getByText(/Every Machine/i)).toBeInTheDocument();
   });
@@ -93,7 +91,7 @@ describe('Commercial Frontend Workflow', () => {
     });
 
     // 4. Profile state renders correctly
-    expect(screen.getByText(/Dataset Profile/i)).toBeInTheDocument();
+    expect(screen.getByText(/Parsed and Ready/i)).toBeInTheDocument();
     expect(screen.getByText('500')).toBeInTheDocument(); // rows
     expect(screen.getByText('10')).toBeInTheDocument(); // columns
     
@@ -124,7 +122,7 @@ describe('Commercial Frontend Workflow', () => {
       ]
     });
 
-    const trainButton = screen.getByRole('button', { name: /Train Model/i });
+    const trainButton = screen.getByRole('button', { name: /Train Predictive Engine/i });
     fireEvent.click(trainButton);
 
     await waitFor(() => {
@@ -138,8 +136,8 @@ describe('Commercial Frontend Workflow', () => {
     expect(screen.getByText('9.80')).toBeInTheDocument(); // MAE
     expect(screen.getByText('1500')).toBeInTheDocument(); // NASA Score
     
-    // 9. Maintenance Horizon renders
-    expect(screen.getByText(/Maintenance Horizon/i)).toBeInTheDocument();
+    // 9. Action Matrix renders
+    expect(screen.getByText(/Action Matrix/i)).toBeInTheDocument();
     expect(screen.getByText(/Critical/i)).toBeInTheDocument();
     expect(screen.getByText('≤30')).toBeInTheDocument();
 
@@ -190,7 +188,7 @@ describe('Commercial Frontend Workflow', () => {
     });
     
     // Train button should be disabled due to missing configuration
-    const trainButton = screen.getByRole('button', { name: /Train Model/i });
+    const trainButton = screen.getByRole('button', { name: /Train Predictive Engine/i });
     expect(trainButton).toBeDisabled();
   });
 });

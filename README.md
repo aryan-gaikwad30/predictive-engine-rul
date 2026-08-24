@@ -1,111 +1,97 @@
-# Predictive Engine — Health & Remaining Useful Life (RUL) Platform
+# Predictive Engine — RUL Platform
 
-## 1. Project Title
-Predictive Engine — Health & Remaining Useful Life (RUL) Platform
+**Predictive Engine** is a configurable predictive-maintenance ML platform prototype. It takes industrial tabular data through automated profiling, leakage-safe preprocessing, deterministic XGBoost training, evaluation, and machine-level degradation prediction.
 
-## 2. Product Vision
-To build a real B2B predictive-maintenance platform where companies can upload industrial/engine telemetry datasets and receive RUL predictions, health analysis, fleet insights, and maintenance-policy comparisons through a premium product experience.
+The system empowers industrial organizations to transition from reactive maintenance to intelligent **Condition-Based Maintenance (CBM)** by predicting the Remaining Useful Life (RUL) of their equipment.
 
-## 3. Business Problem
-Unplanned downtime in industrial equipment leads to significant revenue loss, safety hazards, and inefficient maintenance scheduling. Companies need to transition from reactive or purely schedule-based maintenance to predictive Condition-Based Maintenance (CBM).
-
-## 4. Predictive Maintenance / CBM Explanation
-Predictive maintenance utilizes historical sensor data and machine learning to predict when equipment will fail (Remaining Useful Life - RUL). This allows organizations to perform maintenance exactly when it is needed, optimizing the lifecycle of components and minimizing downtime.
-
-## 5. NASA C-MAPSS Description
-The NASA Commercial Modular Aero-Propulsion System Simulation (C-MAPSS) dataset is a widely used benchmark for predictive maintenance. It consists of simulated turbofan engine degradation data over multiple operational cycles. The data includes operational settings and multiple sensor readings (temperature, pressure, fan speed, etc.) leading up to engine failure.
-
-## 6. Why FD001 is the First Development Subset
-FD001 is the simplest subset with a single operating condition and a single fault mode (HPC degradation). Focusing on FD001 allows us to establish a reliable data foundation, validation pipeline, and initial baseline models before introducing the complexity of multiple operating conditions and fault modes.
-
-## 7. Future FD004 Generalization
-FD004 is the most complex subset, containing multiple operating conditions and multiple fault modes. Ultimately, our platform's models and pipelines must generalize to handle this level of complexity.
-
-## 8. High-Level Architecture
-1. **Raw Data:** Telemetry datasets
-2. **Data Pipeline:** Ingestion and validation
-3. **Feature Engineering:** Signal processing, rolling statistics, health indicators
-4. **ML Engine:** Sequence modeling for degradation prediction
-5. **RUL / Health Engine:** Business logic layer for health and RUL
-6. **FastAPI Backend:** API layer
-7. **React Frontend:** Premium product interface
-
-## Product Frontend (M17)
-
-The frontend is a commercial-quality, design-led Next.js application built with React, TypeScript, Tailwind CSS, and Framer Motion. It consumes the FastAPI backend.
-
-### Architecture
-
-```
-Frontend (Next.js)
-   ↓
-FastAPI Backend
-   ↓
-Dataset Profiling & Abstraction
-   ↓
-Leakage-Safe ML Pipeline
-   ↓
-XGBoost Regression
-   ↓
-Predictions & Maintenance Insights
+### High-Level Workflow
+```text
+CSV → PROFILE → VALIDATE → TRAIN → PREDICT → MAINTENANCE INSIGHT
 ```
 
-### Running the Application
+## Architecture
 
-1. **Start the Backend:**
-   Ensure you have installed the Python dependencies and activated the virtual environment (`.venv-cnn`).
-   ```bash
-   python -m uvicorn src.api.app:app --reload
-   ```
+```mermaid
+graph TD
+    User([User]) -->|Upload CSV| Frontend[Next.js Frontend]
+    Frontend -->|API Config| Backend[FastAPI Backend]
+    
+    subgraph ML Pipeline
+        Backend --> Profiling[Data Profiling]
+        Profiling --> Validation[Entity-Aware Validation]
+        Validation --> Preprocessing[Leakage-Safe Preprocessing]
+        Preprocessing --> ML[XGBoost Engine]
+        ML --> Eval[Maintenance Evaluation]
+    end
+    
+    Eval -->|RUL & Diagnostics| Frontend
+```
 
-2. **Start the Frontend:**
-   Navigate to the `frontend/` directory and run:
-   ```bash
-   npm install
-   npm run dev
-   ```
+## Key Engineering Features
+- **Custom Dataset Profiling:** Automatically detects entity, time, target, and operating conditions.
+- **Entity-Aware Validation:** Ensures no temporal leakage across machine lifecycles.
+- **Leakage-Safe Preprocessing:** Normalizes operating conditions using strictly `fit` training parameters.
+- **XGBoost Baseline:** Highly scalable gradient boosting tree for deterministic regression.
+- **Machine-Level Diagnostics:** Detailed unit-level metrics (RMSE, MAE, NASA PHM08 Penalty).
+- **FastAPI Backend:** Robust, type-safe API with standard error contracts.
+- **React/Next.js Product Frontend:** Premium, commercial-grade product interface.
 
-3. **Demo Workflow:**
-   - Open `http://localhost:3000`
-   - Scroll through the storytelling experience
-   - Click **TRY DEMO DATASET** to automatically upload the synthetic industrial dataset (`public/demo_dataset.csv`)
-   - Confirm the detected schema and click **Train Model**
-   - The system will execute the pipeline synchronously and visualize the RUL, Maintenance Horizon, and Feature Importance.
+## Scientific Story
+This platform was initially benchmarked against the **NASA C-MAPSS FD001** turbofan degradation dataset. 
+In our early experiments on this single-fault, single-condition dataset, the gradient-boosted tree (**XGBoost**) significantly outperformed neural-network approaches (**1D-CNN** and **LSTM**) in both training efficiency and deterministic error metrics.
 
-## 9. Custom Dataset Support
-The platform is designed as **a configurable predictive-maintenance ML platform prototype**, meaning it does not assume all datasets look like NASA C-MAPSS. It supports end-to-end integration of arbitrary tabular industrial datasets (CSV).
-- **Dataset profiling is automatic**: The system uses heuristics to identify Entity, Time, Target, Feature, and Operating Condition columns.
-- **Ambiguity is surfaced**: If multiple columns are candidates for a role, the system surfaces a warning rather than silently guessing.
-- **Explicit configuration**: Users can override automatic detection by providing explicit column configurations (`DatasetConfig`). Target semantics (e.g. `rul`) must be explicitly declared to enable specialized scoring metrics like the NASA PHM08 penalty.
-- **Robust Validation**: The pipeline performs strict checks on monotonicity, missing values, duplicates, and minimum sample limits, failing gracefully with human-readable error messages.
-- **Leakage-Safe XGBoost Pipeline**: Prepared custom datasets can be fed directly into `train_custom_xgboost`, which performs deterministic entity-aware splitting, train-only constant feature removal, and train-only operating condition normalization.
+As a result, XGBoost was selected as the foundational ML engine for custom industrial tabular datasets, while C-MAPSS continues to serve as our gold-standard benchmark.
 
-## 10. Backend API
-The platform provides a FastAPI backend to communicate with the ML engine. 
+## Setup Instructions
 
-### How to start the API:
+### Prerequisites
+- **Python 3.11+**
+- **Node.js 24+**
+
+### 1. Backend (FastAPI + XGBoost)
 ```bash
-uvicorn src.api.app:app --reload
+# 1. Create a virtual environment
+python -m venv .venv
+# Activate it:
+# Windows: .venv\Scripts\activate
+# Unix: source .venv/bin/activate
+
+# 2. Install dependencies
+pip install -r pyproject.toml # Note: You can install via pip install -e .
+
+# 3. Environment configuration
+cp .env.example .env
+
+# 4. Start the backend
+python -m uvicorn src.api.app:app --reload
 ```
-You can view the interactive API documentation at `http://127.0.0.1:8000/docs`.
+The API documentation (Swagger UI) will be accessible at `http://127.0.0.1:8000/docs`.
 
-### Available Endpoints:
-- `GET /health`: Basic health check.
-- `POST /profile`: Upload a CSV dataset to get an automated feature and schema profile.
-- `POST /train`: Upload a CSV dataset to execute the full leakage-safe XGBoost training pipeline. Returns a `job_id`.
-- `GET /job/{job_id}`: Poll for training status (e.g., queued, running, completed, failed).
-- `GET /prediction/{job_id}`: Retrieve training results, model metrics, maintenance metrics, and prediction arrays.
+### 2. Frontend (Next.js)
+```bash
+# 1. Navigate to the frontend directory
+cd frontend
 
-*Note: This is a local prototype. Jobs are stored in memory, and authentication/databases are not implemented yet. The React frontend will consume these endpoints in the next phase.*
+# 2. Environment configuration
+cp .env.example .env.local
 
-## 11. Current Phase
-**Phase 1: Data Foundation + Baseline RUL Prediction** (Specifically Milestone 16: Product Backend / API Contract).
+# 3. Install dependencies
+npm install
 
-## 12. Future Roadmap
-- **Phase 1:** Data foundation + baseline RUL prediction
-- **Phase 2:** Sequence/degradation modeling
-- **Phase 3:** Health index + status + uncertainty
-- **Phase 4:** FastAPI backend
-- **Phase 5:** React product frontend
-- **Phase 6:** FD004 generalization
-- **Phase 7:** Deployment/product hardening
+# 4. Start the frontend
+npm run dev
+```
+The frontend will be accessible at `http://localhost:3000`.
+
+## Demo Workflow
+1. Start both the backend and frontend.
+2. Open `http://localhost:3000` in your browser.
+3. Scroll down and click **TRY DEMO DATASET** to auto-upload the included synthetic industrial dataset (`public/demo_dataset.csv`).
+4. Review the auto-detected schema (Entity, Time, Target). Ensure Target Semantics is set to `rul`.
+5. Click **Train Model**.
+6. Inspect the resulting RUL predictions, prediction horizon thresholds, and feature importance!
+
+## Limitations
+- **Job Registry:** The API currently uses an in-memory dictionary for job state tracking. Submitted training jobs will vanish if the server is restarted.
+- **Single Node:** This is a localized prototype. It does not employ a database, Celery, or Redis.
+- **Upload Restrictions:** File uploads are limited in size (default 10MB) to prevent in-memory exhaustion.

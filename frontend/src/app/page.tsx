@@ -1,13 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/sections/Hero";
 import Storytelling from "@/components/sections/Storytelling";
+import ModelStory from "@/components/sections/ModelStory";
 import UploadSection from "@/components/sections/UploadSection";
 import ProfileAndConfig from "@/components/sections/ProfileAndConfig";
 import TrainingSequence from "@/components/sections/TrainingSequence";
 import ResultsView from "@/components/sections/ResultsView";
+import Engineering from "@/components/sections/Engineering";
+import ProjectJourney from "@/components/sections/ProjectJourney";
+import About from "@/components/sections/About";
 import * as api from "@/lib/api";
 import { ProfileResponse, PredictionResponse } from "@/lib/api";
 
@@ -88,18 +91,21 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
-      <Navbar />
       
       {!isTraining && !results && (
         <>
           <Hero />
           <Storytelling />
+          <ModelStory />
           <UploadSection 
             onUploadSuccess={handleUploadSuccess} 
             onDemoRequest={handleDemoRequest}
             isUploading={isUploading}
             error={uploadError}
           />
+          <Engineering />
+          <ProjectJourney />
+          <About />
         </>
       )}
 
