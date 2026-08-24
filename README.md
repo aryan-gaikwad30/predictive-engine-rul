@@ -30,6 +30,48 @@ FD004 is the most complex subset, containing multiple operating conditions and m
 6. **FastAPI Backend:** API layer
 7. **React Frontend:** Premium product interface
 
+## Product Frontend (M17)
+
+The frontend is a commercial-quality, design-led Next.js application built with React, TypeScript, Tailwind CSS, and Framer Motion. It consumes the FastAPI backend.
+
+### Architecture
+
+```
+Frontend (Next.js)
+   ↓
+FastAPI Backend
+   ↓
+Dataset Profiling & Abstraction
+   ↓
+Leakage-Safe ML Pipeline
+   ↓
+XGBoost Regression
+   ↓
+Predictions & Maintenance Insights
+```
+
+### Running the Application
+
+1. **Start the Backend:**
+   Ensure you have installed the Python dependencies and activated the virtual environment (`.venv-cnn`).
+   ```bash
+   python -m uvicorn src.api.app:app --reload
+   ```
+
+2. **Start the Frontend:**
+   Navigate to the `frontend/` directory and run:
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+3. **Demo Workflow:**
+   - Open `http://localhost:3000`
+   - Scroll through the storytelling experience
+   - Click **TRY DEMO DATASET** to automatically upload the synthetic industrial dataset (`public/demo_dataset.csv`)
+   - Confirm the detected schema and click **Train Model**
+   - The system will execute the pipeline synchronously and visualize the RUL, Maintenance Horizon, and Feature Importance.
+
 ## 9. Custom Dataset Support
 The platform now supports end-to-end integration of arbitrary tabular industrial datasets (CSV).
 - **Dataset profiling is automatic**: The system uses heuristics to identify Entity, Time, Target, Feature, and Operating Condition columns.
