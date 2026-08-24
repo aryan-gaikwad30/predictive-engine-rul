@@ -58,3 +58,40 @@ def nasa_phm08_score(y_true, y_pred) -> float:
     total_score = np.sum(score_early + score_late)
     
     return float(total_score)
+
+def mae_score(y_true, y_pred) -> float:
+    """Calculate Mean Absolute Error."""
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    return float(np.mean(np.abs(y_true - y_pred)))
+
+def early_prediction_pct(y_true, y_pred) -> float:
+    """Calculate percentage of early predictions (predicted < actual)."""
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    if len(y_true) == 0:
+        return 0.0
+    return float(np.mean(y_pred < y_true) * 100)
+
+def late_prediction_pct(y_true, y_pred) -> float:
+    """Calculate percentage of late predictions (predicted > actual)."""
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    if len(y_true) == 0:
+        return 0.0
+    return float(np.mean(y_pred > y_true) * 100)
+
+def mean_signed_error(y_true, y_pred) -> float:
+    """Calculate mean signed error (predicted - actual)."""
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    return float(np.mean(y_pred - y_true))
+
+def max_absolute_error(y_true, y_pred) -> float:
+    """Calculate maximum absolute error."""
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    if len(y_true) == 0:
+        return 0.0
+    return float(np.max(np.abs(y_true - y_pred)))
+

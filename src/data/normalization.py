@@ -12,7 +12,7 @@ class OperatingConditionNormalizer:
     Points falling too far from any training centroid are treated as out-of-distribution (OOD)
     and normalized using global training statistics.
     """
-    def __init__(self, n_conditions: int = 6, random_state: int = 42):
+    def __init__(self, n_conditions: int = 6, random_state: int = 42, settings_columns: Optional[List[str]] = None):
         self.n_conditions = n_conditions
         self.random_state = random_state
         # KMeans for clustering standardized settings
@@ -32,7 +32,7 @@ class OperatingConditionNormalizer:
         self.ood_threshold_ = None
 
         self.feature_columns = None
-        self.settings_columns = ['setting_1', 'setting_2', 'setting_3']
+        self.settings_columns = settings_columns if settings_columns is not None else ['setting_1', 'setting_2', 'setting_3']
         self.is_fitted = False
 
     def fit(self, train_df: pd.DataFrame, feature_columns: List[str]) -> "OperatingConditionNormalizer":

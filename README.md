@@ -31,11 +31,11 @@ FD004 is the most complex subset, containing multiple operating conditions and m
 7. **React Frontend:** Premium product interface
 
 ## 9. Custom Dataset Support
-The platform now supports profiling and preparing arbitrary tabular industrial datasets (CSV).
+The platform now supports end-to-end integration of arbitrary tabular industrial datasets (CSV).
 - **Dataset profiling is automatic**: The system uses heuristics to identify Entity, Time, Target, Feature, and Operating Condition columns.
 - **Ambiguity is surfaced**: If multiple columns are candidates for a role, the system surfaces a warning rather than silently guessing.
 - **Explicit configuration**: Users can override automatic detection by providing a explicit column configuration (`DatasetConfig`).
-- Model training on arbitrary custom datasets is planned for the next product stage.
+- **Leakage-Safe XGBoost Pipeline**: Prepared custom datasets can be fed directly into `train_custom_xgboost`, which performs deterministic entity-aware splitting, train-only constant feature removal, and train-only operating condition normalization.
 
 ## 10. Current Phase
 **Phase 1: Data Foundation + Baseline RUL Prediction** (Specifically Milestone 1: Project Foundation + C-MAPSS Data Ingestion).
