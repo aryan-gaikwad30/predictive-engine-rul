@@ -61,6 +61,7 @@ def train_model(
     entity_column: Optional[str] = Form(None),
     time_column: Optional[str] = Form(None),
     target_column: Optional[str] = Form(None),
+    target_semantics: Optional[str] = Form(None),
     feature_columns: Optional[str] = Form(None),
     condition_columns: Optional[str] = Form(None)
 ):
@@ -84,6 +85,7 @@ def train_model(
         entity_column=entity_column,
         time_column=time_column,
         target_column=target_column,
+        target_semantics=target_semantics,
         feature_columns=feat_cols,
         condition_columns=cond_cols
     )
@@ -106,6 +108,7 @@ def train_model(
             "feature_importance": result.feature_importance.to_dict(orient="records"),
             "maintenance_metrics": result.maintenance_metrics.to_dict(orient="records"),
             "predictions": result.predictions.to_dict(orient="records"),
+            "entity_diagnostics": result.entity_diagnostics,
             "dataset_metadata": result.metadata
         }
         
@@ -148,5 +151,6 @@ def get_prediction(job_id: str):
         feature_importance=res["feature_importance"],
         maintenance_metrics=res["maintenance_metrics"],
         predictions=res["predictions"],
+        entity_diagnostics=res.get("entity_diagnostics", []),
         dataset_metadata=res["dataset_metadata"]
     )

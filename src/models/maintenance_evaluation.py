@@ -64,7 +64,7 @@ def evaluate_rul_bands(diagnostics: pd.DataFrame) -> pd.DataFrame:
     return df.groupby("RUL_band", observed=False).apply(agg_band).reset_index()
 
 
-def evaluate_maintenance_thresholds(diagnostics: pd.DataFrame) -> pd.DataFrame:
+def evaluate_maintenance_thresholds(diagnostics: pd.DataFrame, target_semantics: str = "rul") -> pd.DataFrame:
     """
     Evaluate practical maintenance thresholds: <=30, <=50, <=75, <=100.
     """
@@ -78,7 +78,7 @@ def evaluate_maintenance_thresholds(diagnostics: pd.DataFrame) -> pd.DataFrame:
         if count == 0:
             results.append({
                 "threshold": f"<={thr}",
-                "count": 0, "RMSE": 0.0, "MAE": 0.0, "NASA_score": 0.0,
+                "count": 0, "RMSE": 0.0, "MAE": 0.0, "NASA_score": 0.0 if target_semantics == "rul" else "N/A",
                 "mean_error": 0.0, "early_prediction_percentage": 0.0, 
                 "late_prediction_percentage": 0.0
             })
@@ -88,10 +88,13 @@ def evaluate_maintenance_thresholds(diagnostics: pd.DataFrame) -> pd.DataFrame:
         mae = group["absolute_error"].mean()
         mean_err = group["error"].mean()
         
-        if "nasa_penalty" in group.columns:
-            nasa_score = group["nasa_penalty"].sum()
+        if target_semantics == "rul":
+            if "nasa_penalty" in group.columns:
+                nasa_score = group["nasa_penalty"].sum()
+            else:
+                nasa_score = nasa_phm08_score(group["actual_RUL"], group["predicted_RUL"])
         else:
-            nasa_score = nasa_phm08_score(group["actual_RUL"], group["predicted_RUL"])
+            nasa_score = "N/A"
             
         early_pct = (group["error"] < 0).mean() * 100
         late_pct = (group["error"] > 0).mean() * 100

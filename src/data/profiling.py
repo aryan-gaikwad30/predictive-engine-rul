@@ -9,6 +9,7 @@ class DatasetConfig:
     entity_column: Optional[str] = None
     time_column: Optional[str] = None
     target_column: Optional[str] = None
+    target_semantics: Optional[str] = None
     feature_columns: Optional[List[str]] = None
     condition_columns: Optional[List[str]] = None
 
@@ -44,6 +45,7 @@ class PreparedDataset:
     entity_column: Optional[str]
     time_column: Optional[str]
     target_column: Optional[str]
+    target_semantics: Optional[str]
     feature_columns: List[str]
     condition_columns: List[str]
     metadata: DatasetProfile
@@ -226,6 +228,12 @@ def prepare_custom_dataset(df: pd.DataFrame, config: Optional[DatasetConfig] = N
         if not is_monotonic:
             warnings.append(f"Time column '{time_column}' is not monotonically increasing within entity '{entity_column}'.")
             
+    target_semantics = config.target_semantics
+    if not target_semantics and target_column:
+        keywords = ['rul', 'remaining_life', 'remaining_useful_life', 'remaining_life_cycles', 'remaining_useful_life_cycles']
+        if target_column.lower() in keywords:
+            warnings.append(f"Target column '{target_column}' matches RUL keywords. If this represents Remaining Useful Life, explicitly configure target_semantics='rul' to enable NASA scoring.")
+            
     profile.warnings = warnings
     
     return PreparedDataset(
@@ -233,6 +241,7 @@ def prepare_custom_dataset(df: pd.DataFrame, config: Optional[DatasetConfig] = N
         entity_column=entity_column,
         time_column=time_column,
         target_column=target_column,
+        target_semantics=target_semantics,
         feature_columns=feature_columns,
         condition_columns=condition_columns,
         metadata=profile

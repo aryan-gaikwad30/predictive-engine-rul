@@ -73,10 +73,11 @@ Predictions & Maintenance Insights
    - The system will execute the pipeline synchronously and visualize the RUL, Maintenance Horizon, and Feature Importance.
 
 ## 9. Custom Dataset Support
-The platform now supports end-to-end integration of arbitrary tabular industrial datasets (CSV).
+The platform is designed as **a configurable predictive-maintenance ML platform prototype**, meaning it does not assume all datasets look like NASA C-MAPSS. It supports end-to-end integration of arbitrary tabular industrial datasets (CSV).
 - **Dataset profiling is automatic**: The system uses heuristics to identify Entity, Time, Target, Feature, and Operating Condition columns.
 - **Ambiguity is surfaced**: If multiple columns are candidates for a role, the system surfaces a warning rather than silently guessing.
-- **Explicit configuration**: Users can override automatic detection by providing a explicit column configuration (`DatasetConfig`).
+- **Explicit configuration**: Users can override automatic detection by providing explicit column configurations (`DatasetConfig`). Target semantics (e.g. `rul`) must be explicitly declared to enable specialized scoring metrics like the NASA PHM08 penalty.
+- **Robust Validation**: The pipeline performs strict checks on monotonicity, missing values, duplicates, and minimum sample limits, failing gracefully with human-readable error messages.
 - **Leakage-Safe XGBoost Pipeline**: Prepared custom datasets can be fed directly into `train_custom_xgboost`, which performs deterministic entity-aware splitting, train-only constant feature removal, and train-only operating condition normalization.
 
 ## 10. Backend API

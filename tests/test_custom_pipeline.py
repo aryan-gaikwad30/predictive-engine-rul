@@ -150,7 +150,7 @@ def test_pipeline_missing_required_columns():
     
     dataset = prepare_custom_dataset(df)
     
-    with pytest.raises(ValueError, match="Entity, time, and target columns are required"):
+    with pytest.raises(ValueError, match="Entity column is missing or ambiguous"):
         train_custom_xgboost(dataset)
 
 def test_input_dataframe_not_mutated():

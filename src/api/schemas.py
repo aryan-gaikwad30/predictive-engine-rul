@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, Union
 
 class HealthResponse(BaseModel):
     status: str
@@ -37,7 +37,7 @@ class MaintenanceMetricsResponse(BaseModel):
     count: int
     RMSE: float
     MAE: float
-    NASA_score: float
+    NASA_score: Union[float, str]
     mean_error: float
     early_prediction_percentage: float
     late_prediction_percentage: float
@@ -45,7 +45,7 @@ class MaintenanceMetricsResponse(BaseModel):
 class MetricsResponse(BaseModel):
     RMSE: float
     MAE: float
-    NASA_score: float
+    NASA_score: Union[float, str]
     early_prediction_percentage: float
     late_prediction_percentage: float
     mean_signed_error: float
@@ -58,5 +58,6 @@ class PredictionResponse(BaseModel):
     feature_importance: Optional[List[Dict[str, Any]]] = None
     maintenance_metrics: Optional[List[Dict[str, Any]]] = None
     predictions: Optional[List[Dict[str, Any]]] = None
+    entity_diagnostics: Optional[List[Dict[str, Any]]] = None
     dataset_metadata: Optional[Dict[str, Any]] = None
     error: Optional[str] = None
