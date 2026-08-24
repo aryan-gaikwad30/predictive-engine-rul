@@ -1,3 +1,25 @@
+Metadata-Version: 2.4
+Name: predictive-engine-rul
+Version: 0.1.0
+Summary: Predictive Engine — Health & Remaining Useful Life (RUL) Platform
+Author: Implementation Engineer
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: matplotlib
+Requires-Dist: seaborn
+Requires-Dist: jupyter
+Requires-Dist: pytest
+Requires-Dist: scikit-learn
+Requires-Dist: xgboost
+Requires-Dist: fastapi
+Requires-Dist: uvicorn
+Requires-Dist: python-multipart
+Requires-Dist: httpx
+Dynamic: license-file
+
 # Predictive Engine — Health & Remaining Useful Life (RUL) Platform
 
 ## 1. Project Title
@@ -37,28 +59,10 @@ The platform now supports end-to-end integration of arbitrary tabular industrial
 - **Explicit configuration**: Users can override automatic detection by providing a explicit column configuration (`DatasetConfig`).
 - **Leakage-Safe XGBoost Pipeline**: Prepared custom datasets can be fed directly into `train_custom_xgboost`, which performs deterministic entity-aware splitting, train-only constant feature removal, and train-only operating condition normalization.
 
-## 10. Backend API
-The platform provides a FastAPI backend to communicate with the ML engine. 
+## 10. Current Phase
+**Phase 1: Data Foundation + Baseline RUL Prediction** (Specifically Milestone 1: Project Foundation + C-MAPSS Data Ingestion).
 
-### How to start the API:
-```bash
-uvicorn src.api.app:app --reload
-```
-You can view the interactive API documentation at `http://127.0.0.1:8000/docs`.
-
-### Available Endpoints:
-- `GET /health`: Basic health check.
-- `POST /profile`: Upload a CSV dataset to get an automated feature and schema profile.
-- `POST /train`: Upload a CSV dataset to execute the full leakage-safe XGBoost training pipeline. Returns a `job_id`.
-- `GET /job/{job_id}`: Poll for training status (e.g., queued, running, completed, failed).
-- `GET /prediction/{job_id}`: Retrieve training results, model metrics, maintenance metrics, and prediction arrays.
-
-*Note: This is a local prototype. Jobs are stored in memory, and authentication/databases are not implemented yet. The React frontend will consume these endpoints in the next phase.*
-
-## 11. Current Phase
-**Phase 1: Data Foundation + Baseline RUL Prediction** (Specifically Milestone 16: Product Backend / API Contract).
-
-## 12. Future Roadmap
+## 11. Future Roadmap
 - **Phase 1:** Data foundation + baseline RUL prediction
 - **Phase 2:** Sequence/degradation modeling
 - **Phase 3:** Health index + status + uncertainty

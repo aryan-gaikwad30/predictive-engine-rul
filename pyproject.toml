@@ -6,7 +6,7 @@ authors = [
     {name = "Implementation Engineer"}
 ]
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
     "numpy",
     "pandas",
@@ -15,7 +15,11 @@ dependencies = [
     "jupyter",
     "pytest",
     "scikit-learn",
-    "xgboost"
+    "xgboost",
+    "fastapi",
+    "uvicorn",
+    "python-multipart",
+    "httpx"
 ]
 
 [build-system]
