@@ -7,21 +7,24 @@ import { AlertCircle, ArrowRight } from "lucide-react";
 
 interface ProfileAndConfigProps {
   profile: ProfileResponse;
-  onTrain: (config: { entity_column?: string; time_column?: string; target_column?: string; feature_columns?: string; condition_columns?: string }) => void;
+  onTrain: (config: { entity_column?: string; time_column?: string; target_column?: string; target_semantics?: string; feature_columns?: string; condition_columns?: string }) => void;
+  trainingError?: string | null;
 }
 
-export default function ProfileAndConfig({ profile, onTrain }: ProfileAndConfigProps) {
+export default function ProfileAndConfig({ profile, onTrain, trainingError }: ProfileAndConfigProps) {
   const [entityCol, setEntityCol] = useState(profile.detected_entity || "");
   const [timeCol, setTimeCol] = useState(profile.detected_time || "");
   const [targetCol, setTargetCol] = useState(profile.detected_target || "");
+  const [targetSemantics, setTargetSemantics] = useState<string>("rul");
   const prefersReducedMotion = useReducedMotion();
 
   const hasAmbiguity = !profile.detected_entity || !profile.detected_time || !profile.detected_target;
+  const isCompatible = Boolean(timeCol && targetCol && entityCol && targetSemantics === "rul");
 
   return (
     <section className="py-24 bg-[var(--color-offwhite)]" id="profile">
       <div className="container mx-auto px-6 max-w-6xl">
-        
+
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-24 gap-8">
           <motion.div initial={{ opacity: 0, x: prefersReducedMotion ? 0 : -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
             <h2 className="text-5xl md:text-6xl font-bold tracking-tighter uppercase text-[var(--color-graphite)] leading-[0.9]">
@@ -30,7 +33,7 @@ export default function ProfileAndConfig({ profile, onTrain }: ProfileAndConfigP
             </h2>
           </motion.div>
           {profile.warnings.length > 0 && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
               className="flex items-center gap-3 bg-white text-[var(--color-industrial)] px-6 py-3 rounded-full font-bold border border-[var(--color-border)] shadow-sm"
             >
@@ -41,7 +44,7 @@ export default function ProfileAndConfig({ profile, onTrain }: ProfileAndConfigP
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: prefersReducedMotion ? 0 : 0.1 }}
             className="flex flex-col border-l-2 border-[var(--color-industrial)] pl-8"
           >
@@ -51,7 +54,7 @@ export default function ProfileAndConfig({ profile, onTrain }: ProfileAndConfigP
             <div className="text-sm uppercase tracking-widest text-[var(--color-muted)] font-bold">Total Observations</div>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: prefersReducedMotion ? 0 : 0.2 }}
             className="flex flex-col border-l-2 border-[var(--color-border)] pl-8"
           >
@@ -61,7 +64,7 @@ export default function ProfileAndConfig({ profile, onTrain }: ProfileAndConfigP
             <div className="text-sm uppercase tracking-widest text-[var(--color-muted)] font-bold">Data Variables</div>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: prefersReducedMotion ? 0 : 0.3 }}
             className="flex flex-col border-l-2 border-[var(--color-border)] pl-8"
           >
@@ -72,8 +75,21 @@ export default function ProfileAndConfig({ profile, onTrain }: ProfileAndConfigP
           </motion.div>
         </div>
 
+        {trainingError && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+            className="mb-12 p-6 bg-red-50 border border-red-200 rounded-[2rem] flex gap-4 items-start shadow-sm"
+          >
+            <AlertCircle className="w-6 h-6 text-red-600 shrink-0 mt-1" />
+            <div>
+              <h4 className="text-lg font-bold text-red-900 tracking-tight mb-1">Training Failed</h4>
+              <p className="text-red-700 font-medium leading-relaxed">{trainingError}</p>
+            </div>
+          </motion.div>
+        )}
+
         {hasAmbiguity ? (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="bg-white rounded-[2rem] p-8 md:p-16 border border-[var(--color-border)] shadow-sm mb-20"
           >
@@ -81,12 +97,12 @@ export default function ProfileAndConfig({ profile, onTrain }: ProfileAndConfigP
             <p className="text-xl text-[var(--color-muted)] mb-12 max-w-2xl font-medium leading-relaxed">
               Our engine detected multiple candidate columns for your machine identities or time cycles. Please confirm the correct schema before training.
             </p>
-            
+
             <div className="grid md:grid-cols-3 gap-10">
               <div className="flex flex-col">
                 <label className="text-xs font-bold uppercase tracking-widest text-[var(--color-industrial)] mb-3">Entity (Machine ID)</label>
-                <select 
-                  value={entityCol} 
+                <select
+                  value={entityCol}
                   onChange={e => setEntityCol(e.target.value)}
                   className="w-full bg-[var(--color-offwhite)] border-0 rounded-xl p-5 text-lg font-bold text-[var(--color-graphite)] focus:ring-2 focus:ring-[var(--color-industrial)] appearance-none cursor-pointer"
                 >
@@ -96,8 +112,8 @@ export default function ProfileAndConfig({ profile, onTrain }: ProfileAndConfigP
               </div>
               <div className="flex flex-col">
                 <label className="text-xs font-bold uppercase tracking-widest text-[var(--color-industrial)] mb-3">Time / Cycle</label>
-                <select 
-                  value={timeCol} 
+                <select
+                  value={timeCol}
                   onChange={e => setTimeCol(e.target.value)}
                   className="w-full bg-[var(--color-offwhite)] border-0 rounded-xl p-5 text-lg font-bold text-[var(--color-graphite)] focus:ring-2 focus:ring-[var(--color-industrial)] appearance-none cursor-pointer"
                 >
@@ -107,8 +123,8 @@ export default function ProfileAndConfig({ profile, onTrain }: ProfileAndConfigP
               </div>
               <div className="flex flex-col">
                 <label className="text-xs font-bold uppercase tracking-widest text-[var(--color-industrial)] mb-3">Target (RUL)</label>
-                <select 
-                  value={targetCol} 
+                <select
+                  value={targetCol}
                   onChange={e => setTargetCol(e.target.value)}
                   className="w-full bg-[var(--color-offwhite)] border-0 rounded-xl p-5 text-lg font-bold text-[var(--color-graphite)] focus:ring-2 focus:ring-[var(--color-industrial)] appearance-none cursor-pointer"
                 >
@@ -117,9 +133,22 @@ export default function ProfileAndConfig({ profile, onTrain }: ProfileAndConfigP
                 </select>
               </div>
             </div>
+
+            <div className="mt-8 flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="target_semantics_rul"
+                checked={targetSemantics === "rul"}
+                onChange={(e) => setTargetSemantics(e.target.checked ? "rul" : "")}
+                className="w-5 h-5 accent-[var(--color-industrial)] cursor-pointer"
+              />
+              <label htmlFor="target_semantics_rul" className="text-sm font-bold text-[var(--color-graphite)] cursor-pointer select-none">
+                This target represents Remaining Useful Life (Enable NASA Scoring)
+              </label>
+            </div>
           </motion.div>
         ) : (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 p-8 md:p-12 bg-white rounded-[2rem] border border-[var(--color-border)] shadow-sm mb-20"
           >
@@ -140,15 +169,64 @@ export default function ProfileAndConfig({ profile, onTrain }: ProfileAndConfigP
                 </div>
               </div>
             </div>
+
+            <div className="flex items-center gap-3 mt-4 md:mt-0 bg-[var(--color-offwhite)] p-4 rounded-xl border border-[var(--color-border)]">
+              <input
+                type="checkbox"
+                id="target_semantics_rul_auto"
+                checked={targetSemantics === "rul"}
+                onChange={(e) => setTargetSemantics(e.target.checked ? "rul" : "")}
+                className="w-5 h-5 accent-[var(--color-industrial)] cursor-pointer"
+              />
+              <label htmlFor="target_semantics_rul_auto" className="text-sm font-bold text-[var(--color-graphite)] cursor-pointer select-none">
+                Target is Remaining Useful Life
+              </label>
+            </div>
+          </motion.div>
+        )}
+
+        {!isCompatible && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            className="mb-12 p-8 bg-red-50 border border-red-200 rounded-[2rem] flex flex-col gap-4 shadow-sm"
+          >
+            <div className="flex items-center gap-3 text-red-700">
+              <AlertCircle className="w-6 h-6" />
+              <h4 className="text-xl font-bold tracking-tight uppercase">Dataset Not Compatible</h4>
+            </div>
+
+            <p className="text-red-800 font-medium leading-relaxed max-w-2xl">
+              The current Predictive Engine requires: <br />
+              <strong className="font-bold tracking-widest uppercase text-xs mt-2 inline-block">Entity → Time/Cycle → RUL Target → Features</strong>
+            </p>
+
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl text-sm font-bold tracking-wide uppercase">
+              <div className="flex items-center gap-2 text-green-700">
+                <span className="text-lg">✓</span> {entityCol ? "Entity candidate" : "Entity candidate"}
+              </div>
+              <div className="flex items-center gap-2 text-green-700">
+                <span className="text-lg">✓</span> Numeric sensor features
+              </div>
+              <div className={`flex items-center gap-2 ${timeCol ? 'text-green-700' : 'text-red-700'}`}>
+                <span className="text-lg">{timeCol ? '✓' : '✕'}</span> Time/Cycle
+              </div>
+              <div className={`flex items-center gap-2 ${targetSemantics === "rul" ? 'text-green-700' : 'text-red-700'}`}>
+                <span className="text-lg">{targetSemantics === "rul" ? '✓' : '✕'}</span> Remaining Useful Life target
+              </div>
+            </div>
+            <p className="text-red-800/80 text-sm font-medium mt-2">
+              {!timeCol ? "A temporal column representing time or cycles must be selected. " : ""}
+              {targetSemantics !== "rul" ? "The target must represent Remaining Useful Life (RUL) regression, not classification or categorical labels." : ""}
+            </p>
           </motion.div>
         )}
 
         <div className="flex justify-start">
-          <motion.button 
+          <motion.button
             whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
             whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
-            disabled={!entityCol || !timeCol || !targetCol}
-            onClick={() => onTrain({ entity_column: entityCol, time_column: timeCol, target_column: targetCol })}
+            disabled={!isCompatible}
+            onClick={() => onTrain({ entity_column: entityCol, time_column: timeCol, target_column: targetCol, target_semantics: targetSemantics || undefined })}
             className="px-10 py-5 bg-[var(--color-graphite)] text-white text-lg font-bold uppercase tracking-widest rounded-full hover:bg-[var(--color-industrial)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 group"
           >
             Train Predictive Engine

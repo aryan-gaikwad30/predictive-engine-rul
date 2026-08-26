@@ -118,7 +118,9 @@ describe('Commercial Frontend Workflow', () => {
       ],
       maintenance_metrics: [],
       predictions: [
-        { machine_id: 'M1', time_cycles: 1, predicted_rul: 100, actual_rul: 95 }
+        { unit: "M-1", cycle: 1, actual_RUL: 100, predicted_RUL: 95 },
+        { unit: "M-1", cycle: 2, actual_RUL: 99, predicted_RUL: 94 },
+        { unit: "M-2", cycle: 1, actual_RUL: 25, predicted_RUL: 28 }, // Critical threshold mock
       ]
     });
 

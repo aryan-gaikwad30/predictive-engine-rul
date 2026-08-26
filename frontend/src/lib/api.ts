@@ -63,7 +63,13 @@ export interface FeatureImportance {
 }
 
 export interface PredictionRow {
-  [key: string]: unknown;
+  unit: string | number;
+  cycle: number;
+  actual_RUL?: number;
+  predicted_RUL: number;
+  error?: number;
+  absolute_error?: number;
+  split?: string;
 }
 
 export interface PredictionResponse {
@@ -73,7 +79,9 @@ export interface PredictionResponse {
   metrics?: PredictionMetrics;
   feature_importance?: FeatureImportance[];
   maintenance_metrics?: MaintenanceMetric[];
-  predictions?: PredictionRow[];
+  predictions?: PredictionRow[]; // Deprecated alias
+  validation_predictions?: PredictionRow[];
+  fleet_predictions?: PredictionRow[];
   dataset_metadata?: Record<string, unknown>;
   entity_diagnostics?: Record<string, unknown>[];
 }

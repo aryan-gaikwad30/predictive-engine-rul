@@ -63,7 +63,9 @@ class PredictionResponse(BaseModel):
     metrics: Optional[MetricsResponse] = None
     feature_importance: Optional[List[Dict[str, Any]]] = None
     maintenance_metrics: Optional[List[Dict[str, Any]]] = None
-    predictions: Optional[List[Dict[str, Any]]] = None
+    predictions: Optional[List[Dict[str, Any]]] = None  # Deprecated alias for validation_predictions
+    validation_predictions: Optional[List[Dict[str, Any]]] = None
+    fleet_predictions: Optional[List[Dict[str, Any]]] = None
     entity_diagnostics: Optional[List[Dict[str, Any]]] = None
     dataset_metadata: Optional[Dict[str, Any]] = None
     error: Optional[ErrorDetail] = None

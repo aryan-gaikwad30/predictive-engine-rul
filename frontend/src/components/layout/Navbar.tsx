@@ -43,10 +43,10 @@ export default function Navbar() {
         </div>
         
         <div className="hidden lg:flex flex-1 justify-center items-center gap-8 text-sm font-semibold tracking-tight text-[var(--color-graphite)] whitespace-nowrap px-4">
-          <a href="#product" className="hover:text-[var(--color-industrial)] transition-colors">Product</a>
-          <a href="#how-it-works" className="hover:text-[var(--color-industrial)] transition-colors">How It Works</a>
-          <a href="#analyze" className="hover:text-[var(--color-industrial)] transition-colors">Analyze</a>
-          <a href="#results" className="hover:text-[var(--color-industrial)] transition-colors">Insights</a>
+          <button onClick={() => document.getElementById('product')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-[var(--color-industrial)] transition-colors">Product</button>
+          <button onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-[var(--color-industrial)] transition-colors">How It Works</button>
+          <button onClick={() => document.getElementById('analyze')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-[var(--color-industrial)] transition-colors">Analyze</button>
+          <button onClick={() => document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-[var(--color-industrial)] transition-colors">Insights</button>
         </div>
 
         <div className="flex-shrink-0">

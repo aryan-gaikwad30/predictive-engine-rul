@@ -59,9 +59,12 @@ export default function Home() {
     }
   };
 
-  const handleTrain = async (config: { entity_column?: string; time_column?: string; target_column?: string; feature_columns?: string; condition_columns?: string }) => {
+  const [trainingError, setTrainingError] = useState<string | null>(null);
+
+  const handleTrain = async (config: { entity_column?: string; time_column?: string; target_column?: string; target_semantics?: string; feature_columns?: string; condition_columns?: string }) => {
     if (!file) return;
     setIsTraining(true);
+    setTrainingError(null);
     try {
       const { job_id } = await api.startTraining(file, config);
       setTrainingJobId(job_id);
@@ -78,15 +81,27 @@ export default function Home() {
           }, 1500);
           break;
         } else if (status.status === 'failed') {
-          throw new Error("Training failed");
+          throw new Error("Training failed on the server.");
         } else {
           await new Promise(r => setTimeout(r, 1000));
         }
       }
     } catch (err: unknown) {
-      alert("Training error: " + (err as Error).message);
+      setTrainingError((err as Error).message);
       setIsTraining(false);
     }
+  };
+
+  const handleReset = () => {
+    setFile(null);
+    setProfile(null);
+    setResults(null);
+    setIsTraining(false);
+    setTrainingJobId(null);
+    setIsTrainingComplete(false);
+    setTimeout(() => {
+      document.getElementById('analyze')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   };
 
   return (
@@ -110,7 +125,7 @@ export default function Home() {
       )}
 
       {profile && !isTraining && !results && (
-        <ProfileAndConfig profile={profile} onTrain={handleTrain} />
+        <ProfileAndConfig profile={profile} onTrain={handleTrain} trainingError={trainingError} />
       )}
 
       {isTraining && trainingJobId && (
@@ -120,7 +135,7 @@ export default function Home() {
       )}
 
       {results && (
-        <ResultsView results={results} />
+        <ResultsView results={results} onReset={handleReset} />
       )}
     </main>
   );

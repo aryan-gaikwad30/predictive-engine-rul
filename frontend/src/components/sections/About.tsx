@@ -35,11 +35,11 @@ export default function About() {
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <a href="#" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-6 py-3 border-2 border-[var(--color-border)] rounded-full text-sm font-bold uppercase tracking-widest text-[var(--color-graphite)] hover:border-[var(--color-graphite)] transition-colors group">
+                <a href="https://github.com/aryan-gaikwad30/predictive-engine-rul" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-6 py-3 border-2 border-[var(--color-border)] rounded-full text-sm font-bold uppercase tracking-widest text-[var(--color-graphite)] hover:border-[var(--color-graphite)] transition-colors group">
                   View Source
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </a>
-                <a href="#" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-6 py-3 border-2 border-[var(--color-border)] rounded-full text-sm font-bold uppercase tracking-widest text-[#0077b5] hover:border-[#0077b5] transition-colors group">
+                <a href="YOUR_LINKEDIN_URL_HERE" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-6 py-3 border-2 border-[var(--color-border)] rounded-full text-sm font-bold uppercase tracking-widest text-[#0077b5] hover:border-[#0077b5] transition-colors group">
                   Connect on LinkedIn
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </a>
@@ -74,7 +74,7 @@ export default function About() {
                 </li>
               </ul>
               
-              <a href="#" target="_blank" rel="noopener noreferrer" className="block w-full text-center py-4 bg-[var(--color-graphite)] text-white font-bold uppercase tracking-widest rounded-xl hover:bg-black transition-colors">
+              <a href="https://github.com/aryan-gaikwad30/predictive-engine-rul" target="_blank" rel="noopener noreferrer" className="block w-full text-center py-4 bg-[var(--color-graphite)] text-white font-bold uppercase tracking-widest rounded-xl hover:bg-black transition-colors">
                 View Repository
               </a>
             </motion.div>
@@ -101,7 +101,7 @@ export default function About() {
                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
              </button>
              
-             <a href="#" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto px-10 py-5 bg-transparent border-2 border-white text-white text-lg font-bold uppercase tracking-widest rounded-full hover:bg-white hover:text-[var(--color-industrial)] transition-colors flex items-center justify-center">
+             <a href="https://github.com/aryan-gaikwad30/predictive-engine-rul" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto px-10 py-5 bg-transparent border-2 border-white text-white text-lg font-bold uppercase tracking-widest rounded-full hover:bg-white hover:text-[var(--color-industrial)] transition-colors flex items-center justify-center">
                View The Source
              </a>
            </div>
