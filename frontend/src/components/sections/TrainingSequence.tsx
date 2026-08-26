@@ -8,12 +8,12 @@ interface TrainingSequenceProps {
 }
 
 const STAGES = [
-  "Reading Sensor Data",
-  "Mapping Machine Histories",
-  "Preparing Features",
-  "Training XGBoost Engine",
-  "Evaluating Maintenance Risk",
-  "Model Ready"
+  "Initializing Tensor Engine",
+  "Mapping Neural Topologies",
+  "Extracting Sensor Artifacts",
+  "Training Prediction Model",
+  "Evaluating Survival Functions",
+  "Model Ready For Deployment"
 ];
 
 export default function TrainingSequence({ isComplete }: TrainingSequenceProps) {
@@ -38,16 +38,16 @@ export default function TrainingSequence({ isComplete }: TrainingSequenceProps) 
   }, [isComplete]);
 
   return (
-    <section className="py-32 bg-[var(--color-surface)] min-h-[60vh] flex items-center justify-center relative overflow-hidden border-y border-[var(--color-border)]">
+    <section className="py-32 bg-transparent min-h-[60vh] flex items-center justify-center relative overflow-hidden">
       
       {/* Background ambient motion */}
       <motion.div 
         className="absolute inset-0 z-0 opacity-20 pointer-events-none"
         animate={prefersReducedMotion ? {} : {
           background: [
-            "radial-gradient(circle at 30% 50%, var(--color-industrial) 0%, transparent 40%)",
-            "radial-gradient(circle at 70% 50%, var(--color-industrial) 0%, transparent 40%)",
-            "radial-gradient(circle at 30% 50%, var(--color-industrial) 0%, transparent 40%)"
+            "radial-gradient(circle at 30% 50%, var(--color-primary) 0%, transparent 40%)",
+            "radial-gradient(circle at 70% 50%, var(--color-primary) 0%, transparent 40%)",
+            "radial-gradient(circle at 30% 50%, var(--color-primary) 0%, transparent 40%)"
           ]
         }}
         transition={prefersReducedMotion ? {} : { duration: 12, repeat: Infinity, ease: "linear" }}
@@ -60,7 +60,7 @@ export default function TrainingSequence({ isComplete }: TrainingSequenceProps) 
         <div className="relative h-32 flex items-center justify-center mb-16">
           <div className="w-full max-w-2xl h-[2px] bg-[var(--color-border)] relative overflow-hidden">
              <motion.div 
-               className="absolute top-0 bottom-0 left-0 bg-[var(--color-industrial)]"
+               className="absolute top-0 bottom-0 left-0 bg-[var(--color-primary)] shadow-[0_0_10px_var(--color-primary)]"
                initial={{ width: "0%" }}
                animate={{ width: `${(currentStage / (STAGES.length - 1)) * 100}%` }}
                transition={{ duration: 1, ease: "easeInOut" }}
@@ -71,7 +71,7 @@ export default function TrainingSequence({ isComplete }: TrainingSequenceProps) 
              {STAGES.map((_, i) => (
                <motion.div 
                  key={i}
-                 className={`w-3 h-3 transition-colors duration-500 z-10 ${i <= currentStage ? 'bg-[var(--color-industrial)]' : 'bg-white border border-[var(--color-border)]'}`}
+                 className={`w-3 h-3 transition-colors duration-500 z-10 ${i <= currentStage ? 'bg-[var(--color-primary)] shadow-[0_0_10px_var(--color-primary)]' : 'bg-transparent border border-[var(--color-border)]'}`}
                  initial={{ scale: 0.8 }}
                  animate={{ scale: i === currentStage ? [1, 1.5, 1] : 1 }}
                  transition={i === currentStage ? { duration: 1.5, repeat: Infinity, ease: "easeInOut" } : {}}
@@ -80,7 +80,7 @@ export default function TrainingSequence({ isComplete }: TrainingSequenceProps) 
           </div>
         </div>
 
-        <div className="h-32">
+        <div className="h-32 glass-panel p-8">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStage}
@@ -89,10 +89,10 @@ export default function TrainingSequence({ isComplete }: TrainingSequenceProps) 
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
-               <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-industrial)] mb-4 font-mono">
+               <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-4 font-mono">
                  Phase {String(currentStage + 1).padStart(2, '0')}
                </div>
-               <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter uppercase text-[var(--color-graphite)] leading-tight">
+               <h2 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase text-[var(--color-text)] leading-tight text-glow-primary">
                  {STAGES[currentStage]}
                </h2>
             </motion.div>

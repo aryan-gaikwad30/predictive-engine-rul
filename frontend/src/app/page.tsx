@@ -11,6 +11,9 @@ import ResultsView from "@/components/sections/ResultsView";
 import Engineering from "@/components/sections/Engineering";
 import ProjectJourney from "@/components/sections/ProjectJourney";
 import About from "@/components/sections/About";
+import InteractiveBackground from "@/components/ui/InteractiveBackground";
+import CustomCursor from "@/components/ui/CustomCursor";
+import Navbar from "@/components/layout/Navbar";
 import * as api from "@/lib/api";
 import { ProfileResponse, PredictionResponse } from "@/lib/api";
 
@@ -106,6 +109,13 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
+      <InteractiveBackground />
+      <Navbar 
+        hasResults={!!results} 
+        isTraining={isTraining} 
+        hasProfile={!!profile}
+        onReset={handleReset}
+      />
       
       {!isTraining && !results && (
         <>
