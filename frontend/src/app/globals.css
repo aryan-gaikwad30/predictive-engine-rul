@@ -1,12 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --color-offwhite: #f7f6f2;
+  --color-offwhite: #f5f4ef;
   --color-surface: #ffffff;
-  --color-graphite: #111111;
-  --color-muted: #66635e;
-  --color-industrial: #ff4d00;
-  --color-border: #ddd9d1;
+  --color-graphite: #1a1a1a;
+  --color-muted: #6b6a65;
+  --color-industrial: #e85d04;
+  --color-border: #e2dfd8;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 :root {
@@ -15,13 +16,12 @@
   --nav-height: 80px;
 }
 
-/* Remove dark mode preference completely for this design */
-
 body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
   overflow-x: hidden;
 }
@@ -29,4 +29,29 @@ body {
 ::selection {
   background-color: var(--color-industrial);
   color: #fff;
+}
+
+/* Base typography overrides for oversized editorial look */
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+/* Custom scrollbar for an industrial feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted);
 }

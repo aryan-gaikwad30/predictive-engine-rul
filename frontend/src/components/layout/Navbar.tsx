@@ -1,65 +1,117 @@
 "use client";
 
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { useState } from "react";
+import { motion, useScroll, useMotionValueEvent, useReducedMotion } from "framer-motion";
 
 export default function Navbar() {
   const { scrollY } = useScroll();
   const prefersReducedMotion = useReducedMotion();
-  
-  // Transform background and borders for a pill-effect on scroll
-  const bgOpacity = useTransform(scrollY, [0, 50], [0, 0.95]);
-  const bgColor = useTransform(bgOpacity, (op) => `rgba(255, 255, 255, ${op})`);
-  const paddingY = useTransform(scrollY, [0, 50], ["1.5rem", "0.75rem"]);
-  const maxWidth = useTransform(scrollY, [0, 50], ["100%", "900px"]);
-  const borderRadius = useTransform(scrollY, [0, 50], ["0px", "9999px"]);
-  const borderWidth = useTransform(scrollY, [0, 50], ["0px", "1px"]);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    setIsScrolled(latest > 50);
+  });
+
+  const handleScroll = (id: string) => {
+    setMobileMenuOpen(false);
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const navLinks = [
+    { name: "PRODUCT", id: "product" },
+    { name: "HOW IT WORKS", id: "how-it-works" },
+    { name: "ANALYZE", id: "analyze" },
+    { name: "RESULTS", id: "results" },
+    { name: "ENGINEERING", id: "engineering" },
+  ];
 
   return (
-    <div className="fixed top-0 left-1/2 -translate-x-1/2 z-[100] w-full max-w-7xl px-4 md:px-6 mt-4 flex justify-center pointer-events-none">
-      <motion.nav
-        className="flex items-center justify-between px-6 md:px-8 backdrop-blur-md pointer-events-auto overflow-hidden"
-        style={prefersReducedMotion ? {
-          paddingTop: "0.75rem",
-          paddingBottom: "0.75rem",
-          backgroundColor: "rgba(255, 255, 255, 0.95)",
-          borderColor: "var(--color-border)",
-          borderWidth: "1px",
-          borderRadius: "9999px",
-          width: "100%",
-          maxWidth: "900px"
-        } : {
-          paddingTop: paddingY,
-          paddingBottom: paddingY,
-          backgroundColor: bgColor,
-          borderColor: "var(--color-border)",
-          borderWidth: borderWidth,
-          borderRadius: borderRadius,
-          width: "100%",
-          maxWidth: maxWidth
+    <>
+      <motion.header
+        className="fixed top-0 left-0 right-0 z-50 flex justify-center w-full transition-all duration-300"
+        initial={false}
+        animate={{
+          paddingTop: isScrolled && !prefersReducedMotion ? "1rem" : "1.5rem",
+          paddingBottom: isScrolled && !prefersReducedMotion ? "0" : "1.5rem",
         }}
       >
-        <div className="flex-shrink-0 flex items-center gap-2 font-bold tracking-tighter text-xl">
-          <span className="text-[var(--color-industrial)]">PREDICTIVE</span> ENGINE
-        </div>
-        
-        <div className="hidden lg:flex flex-1 justify-center items-center gap-8 text-sm font-semibold tracking-tight text-[var(--color-graphite)] whitespace-nowrap px-4">
-          <button onClick={() => document.getElementById('product')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-[var(--color-industrial)] transition-colors">Product</button>
-          <button onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-[var(--color-industrial)] transition-colors">How It Works</button>
-          <button onClick={() => document.getElementById('analyze')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-[var(--color-industrial)] transition-colors">Analyze</button>
-          <button onClick={() => document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-[var(--color-industrial)] transition-colors">Insights</button>
-        </div>
+        <motion.nav
+          className="flex items-center justify-between px-6 md:px-8 w-full transition-all duration-300"
+          initial={false}
+          animate={{
+            backgroundColor: isScrolled ? "rgba(245, 244, 239, 0.95)" : "transparent",
+            backdropFilter: isScrolled ? "blur(12px)" : "none",
+            borderBottom: isScrolled ? "1px solid var(--color-border)" : "1px solid transparent",
+            maxWidth: "1440px",
+          }}
+        >
+          {/* Logo */}
+          <div className="flex items-center flex-shrink-0 py-4">
+            <span className="font-bold tracking-tighter text-lg md:text-xl text-[var(--color-graphite)] uppercase whitespace-nowrap">
+              Predictive<span className="text-[var(--color-industrial)]">Engine</span>
+            </span>
+          </div>
 
-        <div className="flex-shrink-0">
-          <button 
-            onClick={() => {
-              document.getElementById('analyze')?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="px-4 md:px-5 py-2 md:py-2.5 bg-[var(--color-graphite)] text-white text-xs md:text-sm font-bold rounded-full hover:bg-[var(--color-industrial)] transition-all duration-300 transform hover:scale-105 whitespace-nowrap"
-          >
-            Analyze Data
-          </button>
+          {/* Desktop Links */}
+          <div className="hidden lg:flex flex-1 justify-center items-center gap-8 px-4">
+            {navLinks.map((link) => (
+              <button
+                key={link.id}
+                onClick={() => handleScroll(link.id)}
+                className="text-xs font-semibold tracking-widest uppercase text-[var(--color-muted)] hover:text-[var(--color-graphite)] transition-colors whitespace-nowrap"
+              >
+                {link.name}
+              </button>
+            ))}
+          </div>
+
+          {/* External Links */}
+          <div className="hidden lg:flex items-center gap-6 flex-shrink-0">
+            <a href="https://github.com/aryan-gaikwad30/predictive-engine-rul" target="_blank" rel="noopener noreferrer" className="text-xs font-semibold tracking-widest uppercase text-[var(--color-graphite)] hover:text-[var(--color-industrial)] transition-colors">
+              GitHub
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-xs font-semibold tracking-widest uppercase text-[var(--color-graphite)] hover:text-[var(--color-industrial)] transition-colors">
+              LinkedIn
+            </a>
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <div className="lg:hidden flex-shrink-0 py-4">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-[var(--color-graphite)] text-sm font-bold tracking-widest uppercase"
+              aria-label="Toggle Menu"
+            >
+              {mobileMenuOpen ? "CLOSE" : "MENU"}
+            </button>
+          </div>
+        </motion.nav>
+      </motion.header>
+
+      {/* Mobile Navigation Overlay */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-40 bg-[var(--background)] flex flex-col pt-24 px-8 pb-8 lg:hidden">
+          <div className="flex flex-col gap-8 text-2xl font-bold tracking-tighter uppercase">
+            {navLinks.map((link) => (
+              <button
+                key={link.id}
+                onClick={() => handleScroll(link.id)}
+                className="text-left text-[var(--color-graphite)] hover:text-[var(--color-industrial)]"
+              >
+                {link.name}
+              </button>
+            ))}
+          </div>
+          <div className="mt-auto flex flex-col gap-4 text-sm font-semibold tracking-widest uppercase">
+            <a href="https://github.com/aryan-gaikwad30/predictive-engine-rul" target="_blank" rel="noopener noreferrer" className="text-[var(--color-muted)]">GitHub</a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-[var(--color-muted)]">LinkedIn</a>
+          </div>
         </div>
-      </motion.nav>
-    </div>
+      )}
+    </>
   );
 }
