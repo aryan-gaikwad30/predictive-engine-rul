@@ -9,13 +9,14 @@ export default function InteractiveCursor() {
   const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
-    setIsClient(true);
+    const timer = setTimeout(() => setIsClient(true), 0);
     const updateMousePosition = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
     window.addEventListener("mousemove", updateMousePosition);
     return () => {
+      clearTimeout(timer);
       window.removeEventListener("mousemove", updateMousePosition);
     };
   }, []);

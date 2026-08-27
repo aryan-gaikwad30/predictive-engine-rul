@@ -1,15 +1,16 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { motion, useSpring, useReducedMotion } from "framer-motion";
+import { motion, useSpring, useReducedMotion, HTMLMotionProps } from "framer-motion";
 
-interface MagneticButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface MagneticButtonProps extends HTMLMotionProps<"div"> {
   children: React.ReactNode;
   strength?: number;
+  disabled?: boolean;
 }
 
-export default function MagneticButton({ children, strength = 0.5, className, ...props }: MagneticButtonProps) {
-  const ref = useRef<HTMLButtonElement>(null);
+export default function MagneticButton({ children, strength = 0.5, className, disabled, ...props }: MagneticButtonProps) {
+  const ref = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const prefersReducedMotion = useReducedMotion();
 
@@ -24,7 +25,7 @@ export default function MagneticButton({ children, strength = 0.5, className, ..
     }
   }, [prefersReducedMotion, x, y]);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (prefersReducedMotion || !ref.current) return;
     const { clientX, clientY } = e;
     const { left, top, width, height } = ref.current.getBoundingClientRect();
@@ -43,18 +44,19 @@ export default function MagneticButton({ children, strength = 0.5, className, ..
   };
 
   return (
-    <motion.button
+    <motion.div
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       animate={{ x: position.x, y: position.y }}
       transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
       className={`relative inline-flex items-center justify-center overflow-hidden ${className || ""}`}
+      style={{ pointerEvents: disabled ? 'none' : 'auto', opacity: disabled ? 0.5 : 1 }}
       {...props}
     >
       <motion.div style={{ x, y }} className="w-full h-full flex items-center justify-center">
         {children}
       </motion.div>
-    </motion.button>
+    </motion.div>
   );
 }

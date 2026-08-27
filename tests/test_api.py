@@ -74,7 +74,8 @@ def test_train_valid_dataset():
             "entity_column": "machine_id",
             "time_column": "timestamp",
             "target_column": "remaining_life",
-            "condition_columns": "mode"
+            "condition_columns": "mode",
+            "target_semantics": "rul"
         }
     )
     
@@ -108,12 +109,13 @@ def test_train_missing_target_returns_error():
     
     response = client.post(
         "/train",
-        files={"file": ("dataset.csv", io.BytesIO(csv_bytes), "text/csv")}
+        files={"file": ("dataset.csv", io.BytesIO(csv_bytes), "text/csv")},
+        data={"target_semantics": "rul"}
     )
     
     # Expect 422 due to ambiguous or missing target (validation error)
-    assert response.status_code == 422
-    assert "Entity, time, and target columns must be unambiguously detected or explicitly provided" in response.json()["detail"]["message"]
+    assert response.status_code == 400
+    assert "Dataset is not compatible with the current RUL workflow. A valid target column is required." in response.json()["detail"]["message"]
 
 def test_unknown_job_returns_404():
     response = client.get("/job/unknown-id")

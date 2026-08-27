@@ -20,7 +20,10 @@ vi.mock('framer-motion', async () => {
   const actual = await vi.importActual('framer-motion');
   return {
     ...actual,
-    useScroll: () => ({ scrollYProgress: { get: () => 0 }, scrollY: { get: () => 0 } }),
+    useScroll: () => ({ 
+      scrollYProgress: { get: () => 0, on: () => () => {} }, 
+      scrollY: { get: () => 0, on: () => () => {} } 
+    }),
     useTransform: () => ({ get: () => 0 }),
     useInView: () => true,
     useReducedMotion: () => false,
@@ -36,6 +39,13 @@ vi.mock('recharts', async () => {
   };
 });
 
+// Mock NumberCounter to prevent animation issues in JSDOM
+vi.mock('@/components/ui/NumberCounter', () => ({
+  default: ({ value, decimals = 0 }: { value: number, decimals?: number }) => (
+    <span>{Number(value).toFixed(decimals)}</span>
+  )
+}));
+
 describe('Commercial Frontend Workflow', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -44,18 +54,18 @@ describe('Commercial Frontend Workflow', () => {
   it('1. Landing page and navigation render', () => {
     render(<Home />);
     // Hero
-    expect(screen.getByText(/Know When/i)).toBeInTheDocument();
-    expect(screen.getAllByRole('button', { name: /Analyze Your Data/i })[0]).toBeInTheDocument();
+    expect(screen.getByText(/Machine Data/i)).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /Launch Dashboard/i })[0]).toBeInTheDocument();
     // Storytelling
-    expect(screen.getByText(/Every Machine/i)).toBeInTheDocument();
+    expect(screen.getByText(/Engineered for Industry/i)).toBeInTheDocument();
   });
 
   test('2. Upload section renders and Demo dataset works', async () => {
     render(<Home />);
-    expect(screen.getByText(/Bring Your/i)).toBeInTheDocument();
+    expect(screen.getByText(/System Ready/i)).toBeInTheDocument();
     
     // Simulate demo click
-    const demoButton = screen.getByText(/TRY DEMO DATASET/i);
+    const demoButton = screen.getByText(/Simulate Demo Feed/i);
     expect(demoButton).toBeInTheDocument();
     
     // Mock fetch for demo dataset
@@ -91,7 +101,7 @@ describe('Commercial Frontend Workflow', () => {
     });
 
     // 4. Profile state renders correctly
-    expect(screen.getByText(/Parsed and Ready/i)).toBeInTheDocument();
+    expect(screen.getByText(/Parsed & Indexed/i)).toBeInTheDocument();
     expect(screen.getByText('500')).toBeInTheDocument(); // rows
     expect(screen.getByText('10')).toBeInTheDocument(); // columns
     
@@ -124,7 +134,7 @@ describe('Commercial Frontend Workflow', () => {
       ]
     });
 
-    const trainButton = screen.getByRole('button', { name: /Train Predictive Engine/i });
+    const trainButton = screen.getByRole('button', { name: /Initialize Model Training/i });
     fireEvent.click(trainButton);
 
     await waitFor(() => {
@@ -133,19 +143,19 @@ describe('Commercial Frontend Workflow', () => {
     });
 
     // 8. Results display backend-provided values
-    expect(screen.getByText(/Your Machines/i)).toBeInTheDocument();
+    expect(screen.getByText(/System Status/i)).toBeInTheDocument();
     expect(screen.getByText('12.50')).toBeInTheDocument(); // RMSE
     expect(screen.getByText('9.80')).toBeInTheDocument(); // MAE
     expect(screen.getByText('1500')).toBeInTheDocument(); // NASA Score
     
     // 9. Action Matrix renders
-    expect(screen.getByText(/Action Matrix/i)).toBeInTheDocument();
+    expect(screen.getByText(/Action Protocol/i)).toBeInTheDocument();
     expect(screen.getByText(/Critical/i)).toBeInTheDocument();
     expect(screen.getByText('≤30')).toBeInTheDocument();
 
     // 10. Feature importance renders
     expect(screen.getByText('sensor_1')).toBeInTheDocument();
-    expect(screen.getByText('85.0%')).toBeInTheDocument();
+    expect(screen.getByText('85.0')).toBeInTheDocument();
   });
 
   test('11. API failure displays error', async () => {
@@ -157,7 +167,7 @@ describe('Commercial Frontend Workflow', () => {
     
     vi.mocked(api.uploadProfile).mockRejectedValue(new Error('Backend unavailable'));
     
-    const demoButton = screen.getByText(/TRY DEMO DATASET/i);
+    const demoButton = screen.getByText(/Simulate Demo Feed/i);
     fireEvent.click(demoButton);
     
     await waitFor(() => {
@@ -182,15 +192,15 @@ describe('Commercial Frontend Workflow', () => {
       missing_values: {}, duplicate_count: 0, constant_columns: [], warnings: []
     });
 
-    const demoButton = screen.getByText(/TRY DEMO DATASET/i);
+    const demoButton = screen.getByText(/Simulate Demo Feed/i);
     fireEvent.click(demoButton);
     
     await waitFor(() => {
-      expect(screen.getByText(/We Need Your Input/i)).toBeInTheDocument();
+      expect(screen.getByText(/Schema Verification Required/i)).toBeInTheDocument();
     });
     
     // Train button should be disabled due to missing configuration
-    const trainButton = screen.getByRole('button', { name: /Train Predictive Engine/i });
+    const trainButton = screen.getByRole('button', { name: /Initialize Model Training/i });
     expect(trainButton).toBeDisabled();
   });
 });

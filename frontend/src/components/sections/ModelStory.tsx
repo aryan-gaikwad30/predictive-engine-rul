@@ -1,11 +1,8 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
 import TiltCard from "../ui/TiltCard";
 
 export default function ModelStory() {
-  const prefersReducedMotion = useReducedMotion();
-
   return (
     <section className="py-24 md:py-32 bg-transparent text-[var(--color-text)] border-t border-[var(--color-border)]">
       <div className="container mx-auto px-6 md:px-8 max-w-[1440px]">

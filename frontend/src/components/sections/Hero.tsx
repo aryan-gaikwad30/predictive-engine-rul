@@ -13,7 +13,7 @@ export default function Hero() {
   const opacity = useTransform(scrollY, [0, 600], [1, prefersReducedMotion ? 1 : 0]);
   
   // Base spring physics for smooth entrance
-  const transitionBase = { duration: 1.2, ease: "circOut" };
+  const transitionBase = { duration: 1.2, ease: "circOut" as const };
 
   return (
     <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden pt-32 pb-16" id="product">
@@ -23,13 +23,13 @@ export default function Hero() {
         <motion.div 
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 0.15, scale: 1 }}
-          transition={{ duration: 2, ease: "easeOut" }}
+          transition={{ duration: 2, ease: "easeOut" as const }}
           className="absolute w-[600px] h-[600px] rounded-full bg-[var(--color-primary)] blur-[120px] -top-32 -right-32 opacity-20"
         />
         <motion.div 
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 0.05, scale: 1 }}
-          transition={{ duration: 2, delay: 0.5, ease: "easeOut" }}
+          transition={{ duration: 2, delay: 0.5, ease: "easeOut" as const }}
           className="absolute w-[800px] h-[800px] rounded-full bg-[var(--color-secondary)] blur-[150px] -bottom-64 -left-32 opacity-10"
         />
       </div>

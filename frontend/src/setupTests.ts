@@ -30,3 +30,8 @@ class IntersectionObserver {
   disconnect() {}
 }
 window.IntersectionObserver = IntersectionObserver as unknown as typeof window.IntersectionObserver;
+
+// Mock HTMLCanvasElement.getContext for jsdom
+HTMLCanvasElement.prototype.getContext = () => {
+  return null;
+};

@@ -13,7 +13,7 @@ export default function CustomCursor() {
   const smoothY = useSpring(mousePos.y, springConfig);
 
   useEffect(() => {
-    setIsClient(true);
+    const timer = setTimeout(() => setIsClient(true), 0);
     
     const updateMouse = (e: MouseEvent) => {
       setMousePos({ x: e.clientX, y: e.clientY });
@@ -40,6 +40,7 @@ export default function CustomCursor() {
     document.body.style.cursor = "none";
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener("mousemove", updateMouse);
       window.removeEventListener("mouseover", handleMouseOver);
       document.body.style.cursor = "auto";
