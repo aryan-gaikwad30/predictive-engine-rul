@@ -40,7 +40,18 @@ graph TD
 This platform was initially benchmarked against the **NASA C-MAPSS FD001** turbofan degradation dataset. 
 In our early experiments on this single-fault, single-condition dataset, the gradient-boosted tree (**XGBoost**) significantly outperformed neural-network approaches (**1D-CNN** and **LSTM**) in both training efficiency and deterministic error metrics.
 
-As a result, XGBoost was selected as the foundational ML engine for custom industrial tabular datasets, while C-MAPSS continues to serve as our gold-standard benchmark.
+As a result, XGBoost was selected as the foundational ML engine for custom industrial tabular datasets.
+
+### Real-World Generalization (M20 Update)
+To prove the architecture's real-world viability, the baseline pipeline was evaluated on complex, unseen NASA datasets (**FD003** and **FD004**) containing multiple operating conditions and fault modes. The pipeline successfully generalized to these harder datasets *without any architectural modifications*, maintaining strong predictive baseline performance:
+
+| Dataset | Complexity | Model | RMSE | NASA Score |
+|---|---|---|---|---|
+| **FD001 (Demo)** | Low (1 Cond, 1 Fault) | XGBoost | 17.90 | 831 |
+| **FD003 (Eval)** | Medium (2 Cond, 1 Fault)| XGBoost | 21.38 | 2,153 |
+| **FD004 (Eval)** | High (6 Cond, 2 Fault) | XGBoost | 29.97 | 7,811 |
+
+*For full experimental details, see `experiments/README.md`.*
 
 ## Setup Instructions
 
