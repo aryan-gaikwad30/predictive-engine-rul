@@ -21,6 +21,8 @@ htmlcov/
 # Environment / secrets
 .env
 .env.*
+!.env.example
+!frontend/.env.example
 
 # Raw and generated datasets
 # Keep the directory structure in Git, but never commit the actual C-MAPSS data.
