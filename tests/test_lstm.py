@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-import tensorflow as tf
+tf = pytest.importorskip("tensorflow")
 from src.models.lstm import build_lstm_model
 
 def test_lstm_model_accepts_expected_shape_and_outputs_scalar():
