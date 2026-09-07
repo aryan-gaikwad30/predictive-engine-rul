@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Predictive Engine — Frontend Application
 
-## Getting Started
+Interactive Next.js user interface for the **Predictive Engine** Remaining Useful Life (RUL) and fleet health intelligence platform.
 
-First, run the development server:
+[![Next.js](https://img.shields.io/badge/Next.js%2016-App%20Router-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React%2019-UI%20Components-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-Styling-06B6D4?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Vitest](https://img.shields.io/badge/Vitest-Unit%20Tests-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 🌟 Overview
+
+The frontend delivers a streamlined condition-based maintenance interface that allows engineers and operators to:
+1. **Upload & Profile Telemetry:** Upload arbitrary multi-sensor CSV datasets or load the bundled NASA C-MAPSS 100-engine demo dataset.
+2. **Configure Pipeline Schema:** Inspect automatically inferred entity, time, target, feature, and operating condition columns.
+3. **Monitor Asynchronous Training:** Track real-time training progress against the FastAPI backend via polling.
+4. **Inspect Fleet Health Triage:** View categorized fleet status (`CRITICAL`, `WARNING`, `HEALTHY`) and mean predicted RUL.
+5. **Analyze Single-Machine Trajectories:** Select specific engines to inspect predicted vs. actual degradation curves and multi-sensor telemetry trends over operating cycles.
+6. **Review Model Performance & Interpretability:** Inspect validation RMSE, MAE, NASA PHM08 asymmetric loss, and top feature importance rankings.
+
+---
+
+## 📁 Key Components & Structure
+
+```
+frontend/src/
+├── app/
+│   ├── layout.tsx         # Root layout with fonts, metadata, and dark theme
+│   └── page.tsx           # Main unified application controller and state machine
+├── components/
+│   ├── layout/
+│   │   └── Navbar.tsx     # Navigation bar with live backend health indicator & reset
+│   ├── sections/
+│   │   ├── Hero.tsx               # Landing hero view with live API health check
+│   │   ├── Storytelling.tsx       # Industrial predictive maintenance context
+│   │   ├── ModelStory.tsx         # Detailed metrics (RMSE, NASA Score) & feature importance
+│   │   ├── UploadSection.tsx      # CSV upload dropzone & sample dataset selector
+│   │   ├── ProfileAndConfig.tsx   # Schema profiling & target RUL configuration
+│   │   ├── TrainingSequence.tsx   # Model training animation & progress polling
+│   │   ├── ResultsView.tsx        # Fleet health triage, machine selector & Recharts curves
+│   │   ├── Engineering.tsx        # Engineering deep dives & architectural notes
+│   │   ├── ProjectJourney.tsx     # Milestone evolution & engineering journey
+│   │   └── About.tsx              # System boundaries, guardrails & technical specs
+│   └── ui/
+│       └── InteractiveBackground.tsx  # Dynamic particle / ambient canvas background
+└── lib/
+    └── api.ts             # Type-safe API client for FastAPI backend communication
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ⚙️ Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create `.env.local` in the `frontend/` directory:
 
-## Learn More
+```env
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
+```
 
-To learn more about Next.js, take a look at the following resources:
+For production deployment (e.g. Vercel), set `NEXT_PUBLIC_API_URL` to the production backend endpoint:
+```env
+NEXT_PUBLIC_API_URL=https://predictive-engine-rul.onrender.com
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🚀 Development & Build Scripts
 
-## Deploy on Vercel
+```bash
+# Install dependencies
+npm install
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Run local development server
+npm run dev
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Run Vitest test suite
+npm run test
+
+# Run ESLint code style check
+npm run lint
+
+# Compile production bundle
+npm run build
+```
+
+---
+
+## 🧪 Testing
+
+The frontend is tested using **Vitest** and **React Testing Library**:
+```bash
+npm run test
+```
