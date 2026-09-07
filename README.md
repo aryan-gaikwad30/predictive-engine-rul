@@ -25,6 +25,26 @@ The platform provides an end-to-end workflow: from CSV ingestion and automated s
 
 ---
 
+## 📸 Product Preview & System Visuals
+
+| Landing Experience | End-to-End Pipeline Flow |
+|:---:|:---:|
+| ![Landing Portal](docs/screenshots/01_hero_landing.png) | ![Pipeline Flow](docs/screenshots/02_pipeline_architecture.png) |
+| **Landing & Mission-Critical Maintenance Portal** | **Signal to Prediction: Pipeline Architecture** |
+
+| Model Comparison (XGBoost vs Deep Learning) | Engineering Depth & Technology Stack |
+|:---:|:---:|
+| ![Model Comparison](docs/screenshots/03_model_comparison_xgboost.png) | ![Engineering Tech Stack](docs/screenshots/04_engineering_tech_stack.png) |
+| **Empirical Model Comparison & Metrics** | **Decoupled Architecture & Full Tech Stack** |
+
+<p align="center">
+  <img src="docs/screenshots/05_about_architecture.png" alt="About & Repository Architecture" width="85%" />
+  <br />
+  <em>System Specification & Repository Architecture</em>
+</p>
+
+---
+
 ## 🎯 The Industrial Problem: Why Predictive Maintenance Matters
 
 Industrial and aerospace operators face a fundamental maintenance dilemma:
