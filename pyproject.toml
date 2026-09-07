@@ -3,7 +3,7 @@ name = "predictive-engine-rul"
 version = "0.1.0"
 description = "Predictive Engine — Health & Remaining Useful Life (RUL) Platform"
 authors = [
-    {name = "Implementation Engineer"}
+    {name = "Aryan Gaikwad", email = "aryangaikwad6830@gmail.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.11"
