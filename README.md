@@ -32,16 +32,20 @@ The platform provides an end-to-end workflow: from CSV ingestion and automated s
 | ![Landing Portal](docs/screenshots/01_hero_landing.png) | ![Pipeline Flow](docs/screenshots/02_pipeline_architecture.png) |
 | **Landing & Mission-Critical Maintenance Portal** | **Signal to Prediction: Pipeline Architecture** |
 
-| Model Comparison (XGBoost vs Deep Learning) | Engineering Depth & Technology Stack |
+| Automated Schema Profiling | Signal Weights & Action Protocol |
 |:---:|:---:|
-| ![Model Comparison](docs/screenshots/03_model_comparison_xgboost.png) | ![Engineering Tech Stack](docs/screenshots/04_engineering_tech_stack.png) |
-| **Empirical Model Comparison & Metrics** | **Decoupled Architecture & Full Tech Stack** |
+| ![Dataset Profiling](docs/screenshots/06_dataset_profiling_schema.png) | ![Signal Weights](docs/screenshots/07_signal_weights_action_protocol.png) |
+| **Automated Data Ingestion & Schema Profiling** | **Telemetry Signal Weights & Action Protocol** |
 
-<p align="center">
-  <img src="docs/screenshots/05_about_architecture.png" alt="About & Repository Architecture" width="85%" />
-  <br />
-  <em>System Specification & Repository Architecture</em>
-</p>
+| Single-Asset Degradation Curve | Model Comparison (XGBoost vs Deep Learning) |
+|:---:|:---:|
+| ![Asset Degradation Trajectory](docs/screenshots/08_asset_degradation_trajectory.png) | ![Model Comparison](docs/screenshots/03_model_comparison_xgboost.png) |
+| **Degradation Trajectory & Critical Warning Alert** | **Empirical Model Comparison & Metrics** |
+
+| Engineering Depth & Technology Stack | System Specification & Open Architecture |
+|:---:|:---:|
+| ![Engineering Tech Stack](docs/screenshots/04_engineering_tech_stack.png) | ![About Architecture](docs/screenshots/05_about_architecture.png) |
+| **Decoupled Architecture & Full Tech Stack** | **System Specification & Repository Architecture** |
 
 ---
 

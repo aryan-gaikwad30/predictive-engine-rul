@@ -24,12 +24,30 @@ This directory contains high-resolution production interface screenshots capture
 
 ---
 
-### 4. Engineering Depth & Decoupled Technology Stack
+### 4. Automated Data Ingestion & Schema Profiling
+> *Real-time telemetry ingestion card parsing observations, identifying entity channels, indexing temporal cycles, and validating RUL regression targets.*
+![Automated Data Ingestion & Schema Profiling](06_dataset_profiling_schema.png)
+
+---
+
+### 5. Telemetry Signal Weights & Maintenance Action Protocol
+> *Feature importance percentage breakdown (Vibration, Operating Settings, Temperature, Pressure) paired with decision-action thresholds (Critical Alert <=30, Warning State <=75, Monitoring Phase <=100).*
+![Telemetry Signal Weights & Action Protocol](07_signal_weights_action_protocol.png)
+
+---
+
+### 6. Single-Asset Degradation Curve & Critical Health Warning
+> *Interactive Recharts visualization tracking actual vs. predicted RUL degradation over time cycles with critical threshold alert boundaries.*
+![Single-Asset Degradation Curve](08_asset_degradation_trajectory.png)
+
+---
+
+### 7. Engineering Depth & Decoupled Technology Stack
 > *Overview of the modular, API-first architecture spanning automated schema profiling, leakage-safe validation, operating-condition normalization, and the full tech stack.*
 ![Engineering Depth & Technology Stack](04_engineering_tech_stack.png)
 
 ---
 
-### 5. System Specification & Repository Architecture
+### 8. System Specification & Repository Architecture
 > *Developer and engineering overview detailing the open-source codebase, model experiment logs, API contracts, and frontend implementation.*
 ![System Specification & Repository Architecture](05_about_architecture.png)
